@@ -3,15 +3,15 @@
   "lon": 12.59,
   "timezone": "Europe/Stockholm",
   "temp": 12.12,
-  "feels_like": 11.01,
-  "clouds": 90,
+  "feels_like": 11.08,
+  "clouds": 93,
   "visibility": 10000,
-  "wind_speed": 2.54,
-  "wind_gust": 2.85,
-  "wind_deg": 325,
+  "wind_speed": 2.25,
+  "wind_gust": 2.41,
+  "wind_deg": 293,
   "wind_dir": "NW",
   "rain_1h": null,
   "description": "Bedeckt",
   "icon": "04n",
-  "last_updated": "2026-05-28T19:58:34.642378+00:00"
+  "last_updated": "2026-05-28T20:35:51.671157+00:00"
 }
