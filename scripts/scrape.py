@@ -65,11 +65,20 @@ def parse_float(raw: str) -> float | None:
     return float(m.group(1)) if m else None
 
 
+def parse_position(raw: str) -> tuple[float | None, float | None]:
+    """Parse combined position like '55.70, 12.69'."""
+    m = re.match(r'(-?\d{1,3}\.\d+)\s*,\s*(-?\d{1,3}\.\d+)', (raw or '').strip())
+    if not m:
+        return None, None
+    return _check(float(m.group(1)), 'lat'), _check(float(m.group(2)), 'lon')
+
+
 # ── Field mapping ─────────────────────────────────────────────────────────────
 
 _LAT_KEYS  = ('latitude', 'lat', 'breite')
-_LON_KEYS  = ('longitude', 'lon', 'lng', 'länge', 'laenge')
-_SPD_KEYS  = ('speed', 'speed (sog)', 'sog', 'geschwindigkeit')
+_LON_KEYS  = ('longitude', 'lon', 'lng', 'längengrad', 'laengengrad')
+_POS_KEYS  = ('position', 'pos', 'coordinates', 'koordinaten')
+_SPD_KEYS  = ('speed', 'speed (sog)', 'sog', 'geschwindigkeit', 'tempo')
 _CRS_KEYS  = ('course', 'course (cog)', 'cog', 'heading', 'kurs', 'hdg')
 _STA_KEYS  = ('status', 'nav status', 'nav. status', 'navigationsstatus')
 _ATD_KEYS  = ('atd', 'actual time of departure', 'departed', 'abfahrtszeit')
@@ -88,7 +97,13 @@ def apply(data: dict, label: str, value: str):
     lbl = label.lower().strip().rstrip(':').strip()
     val = value.strip()
 
-    if lbl in _LAT_KEYS:
+    if lbl in _POS_KEYS:
+        lat, lon = parse_position(val)
+        if lat is not None:
+            data['latitude'] = lat
+        if lon is not None:
+            data['longitude'] = lon
+    elif lbl in _LAT_KEYS:
         data['latitude']       = parse_coord(val, 'lat') or data['latitude']
     elif lbl in _LON_KEYS:
         data['longitude']      = parse_coord(val, 'lon') or data['longitude']
@@ -122,8 +137,15 @@ def regex_extract(data: dict, text: str):
         data['latitude']  = _check(lat, 'lat')
         data['longitude'] = _check(lon, 'lon')
 
+    if data['latitude'] is None:
+        lat, lon = parse_position(text)
+        if lat is not None:
+            data['latitude'] = lat
+        if lon is not None:
+            data['longitude'] = lon
+
     if data['speed'] is None:
-        m = re.search(r'(?:speed|sog)[^\d]*(\d+\.?\d*)', text, re.IGNORECASE)
+        m = re.search(r'(?:speed|sog|tempo)[^\d]*(\d+\.?\d*)', text, re.IGNORECASE)
         if m:
             data['speed'] = float(m.group(1))
 
@@ -131,6 +153,39 @@ def regex_extract(data: dict, text: str):
         m = re.search(r'(?:course|cog|heading|kurs)[^\d]*(\d+\.?\d*)', text, re.IGNORECASE)
         if m:
             data['course'] = float(m.group(1))
+
+
+# ── Voyage section (ports, ATD, ETA) ─────────────────────────────────────────
+
+async def scrape_voyage_section(page, data: dict) -> None:
+    """Extract departure/arrival ports and times from .voyage-section."""
+    section = await page.query_selector('.voyage-section')
+    if not section:
+        return
+
+    voyage = await section.evaluate('''(el) => {
+        const out = { atd: null, eta: null, departure_port: null, destination_port: null };
+
+        for (const block of el.querySelectorAll('div[style*="flex: 1"]')) {
+            const children = block.querySelectorAll(':scope > div');
+            if (children.length < 2) continue;
+            const lbl = children[0].textContent.trim().toLowerCase();
+            const val = children[1].textContent.trim();
+            if (lbl.includes('abfahrt') || lbl.includes('atd')) out.atd = val;
+            if (lbl.includes('ankunft') || lbl.includes('eta')) out.eta = val;
+        }
+
+        const ports = el.querySelectorAll('.voyage-timeline .port-info .port-code');
+        if (ports[0]) out.departure_port = ports[0].textContent.trim();
+        if (ports[1]) out.destination_port = ports[1].textContent.trim();
+
+        return out;
+    }''')
+
+    for key in ('atd', 'eta', 'departure_port', 'destination_port'):
+        val = voyage.get(key)
+        if val:
+            data[key] = val
 
 
 # ── Playwright scraper ────────────────────────────────────────────────────────
@@ -185,6 +240,28 @@ async def scrape() -> dict:
 
         data = dict(base)
 
+        try:
+            await page.wait_for_selector(
+                '.ship-details-grid .detail-item, .voyage-section',
+                timeout=15_000,
+            )
+        except Exception:
+            pass
+
+        # Strategy 0: marinetraffic.live ship-details grid
+        for item in await page.query_selector_all('.ship-details-grid .detail-item'):
+            try:
+                lbl_el = await item.query_selector('.detail-label')
+                val_el = await item.query_selector('.detail-value')
+                if lbl_el and val_el:
+                    lbl = (await lbl_el.inner_text()).strip()
+                    val = (await val_el.inner_text()).strip()
+                    apply(data, lbl, val)
+            except Exception:
+                pass
+
+        await scrape_voyage_section(page, data)
+
         # Strategy 1: table rows  (label in first cell, value in second)
         rows = await page.query_selector_all('table tr')
         for row in rows:
@@ -209,8 +286,8 @@ async def scrape() -> dict:
 
         # Strategy 3: generic key/value divs  (.label + .value, .key + .data, …)
         for pair_sel in [
-            ('.label, .key, .info-label, .field-label',
-             '.value, .data, .info-value, .field-value'),
+            ('.detail-label, .label, .key, .info-label, .field-label',
+             '.detail-value, .value, .data, .info-value, .field-value'),
         ]:
             lbls = await page.query_selector_all(pair_sel[0])
             for lbl_el in lbls:
