@@ -126,11 +126,10 @@ function updateWeather(w) {
     iconEl.alt = w.description || '';
   }
 
-  set('w-temp',       `${Math.round(w.temp)} °C`);
-  set('w-desc',       w.description ?? null);
-  set('w-feels',      w.feels_like  != null ? `${Math.round(w.feels_like)} °C` : null);
-  set('w-humidity',   w.humidity    != null ? `${w.humidity} %` : null);
-  set('w-pressure',   w.pressure    != null ? `${w.pressure} hPa` : null);
+  set('w-temp',   `${Math.round(w.temp)} °C`);
+  set('w-desc',   w.description ?? null);
+  set('w-feels',  w.feels_like != null ? `${Math.round(w.feels_like)} °C` : null);
+  set('w-clouds', w.clouds     != null ? `${w.clouds} %` : null);
 
   // Wind: "5,2 m/s SW (Böen 8,1 m/s)"
   if (w.wind_speed != null) {
@@ -141,6 +140,9 @@ function updateWeather(w) {
   } else {
     set('w-wind', null);
   }
+
+  // Niederschlag
+  set('w-rain', w.rain_1h != null ? `${w.rain_1h.toFixed(1)} mm/h` : 'kein Regen');
 
   // Sichtweite in km
   if (w.visibility != null) {

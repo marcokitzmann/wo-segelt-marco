@@ -430,21 +430,21 @@ def fetch_weather(lat: float, lon: float) -> dict | None:
     weather = (d.get("weather") or [{}])[0]
     wind_deg = d.get("wind_deg")
 
+    rain_1h = (d.get("rain") or {}).get("1h")
+
     result = {
         "lat":          raw.get("lat"),
         "lon":          raw.get("lon"),
         "timezone":     raw.get("timezone"),
         "temp":         d.get("temp"),
         "feels_like":   d.get("feels_like"),
-        "humidity":     d.get("humidity"),
-        "pressure":     d.get("pressure"),
+        "clouds":       d.get("clouds"),
+        "visibility":   d.get("visibility"),
         "wind_speed":   d.get("wind_speed"),
         "wind_gust":    d.get("wind_gust"),
         "wind_deg":     wind_deg,
         "wind_dir":     _wind_dir_label(wind_deg),
-        "clouds":       d.get("clouds"),
-        "visibility":   d.get("visibility"),
-        "uvi":          d.get("uvi"),
+        "rain_1h":      rain_1h,
         "description":  weather.get("description"),
         "icon":         weather.get("icon"),
         "last_updated": datetime.now(timezone.utc).isoformat(),
