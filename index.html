@@ -4,128 +4,142 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Wo segelt Marco? — Roald Amundsen</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4/dist/maplibre-gl.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <button id="burger-btn" aria-label="Menü öffnen">&#9776;</button>
+  <div id="sidebar-overlay"></div>
+
   <div id="app">
 
     <aside id="sidebar">
-      <div id="sidebar-header">
-        <div class="ship-emoji">🚢</div>
-        <div>
-          <h1>Roald Amundsen</h1>
-          <div class="mmsi">MMSI · 211215170</div>
-        </div>
-      </div>
 
-      <!-- Marco-Status-Banner -->
-      <div id="marco-sailing" class="marco-banner hidden">
-        <span class="marco-icon">⛵</span>
-        <div>
+      <!-- Tab-Navigation -->
+      <nav id="sidebar-tabs">
+        <button class="tab-btn active" data-tab="page-1">Status</button>
+        <button class="tab-btn" data-tab="page-2">Schiff &amp; Wetter</button>
+        <button id="sidebar-close" aria-label="Schließen">✕</button>
+      </nav>
+
+      <!-- Seite 1: Marco -->
+      <div class="sidebar-page" id="page-1">
+        <div id="sidebar-header">
+          <h1>Wo segelt Marco?</h1>
+          <img src="images/bobblehead-marco.jpg" alt="Marco Bobblehead" class="sidebar-avatar" />
+        </div>
+
+        <div id="marco-sailing" class="marco-banner hidden">
+          <span class="marco-icon">⛵</span>
           <div class="marco-title">Marco ist an Bord!</div>
-          <div class="marco-sub">Gute Reise & faire Winde</div>
         </div>
-      </div>
-      <div id="marco-shore" class="marco-banner marco-shore hidden">
-        <span class="marco-icon">🏠</span>
-        <div>
+        <div id="marco-shore" class="marco-banner marco-shore hidden">
+          <span class="marco-icon">🏠</span>
           <div class="marco-title">Marco ist an Land</div>
-          <div class="marco-sub">Schiff unterwegs ohne ihn</div>
         </div>
       </div>
 
-      <div id="vessel-data">
-        <section class="info-section">
-          <h2>Position</h2>
-          <div class="info-row">
-            <span class="lbl">Breitengrad</span>
-            <span class="val" id="v-lat">—</span>
-          </div>
-          <div class="info-row">
-            <span class="lbl">Längengrad</span>
-            <span class="val" id="v-lon">—</span>
-          </div>
-        </section>
+      <!-- Seite 2: Schiff & Wetter -->
+      <div class="sidebar-page hidden" id="page-2">
+        <div id="ship-info">
+          <div class="ship-name">Roald Amundsen</div>
+          <div class="ship-meta">MMSI · 211215170</div>
+          <div class="ship-meta">Heimathafen: Eckernförde</div>
+        </div>
 
-        <section class="info-section">
-          <h2>Navigation</h2>
-          <div class="info-row">
-            <span class="lbl">Geschwindigkeit</span>
-            <span class="val" id="v-speed">—</span>
-          </div>
-          <div class="info-row">
-            <span class="lbl">Kurs</span>
-            <span class="val" id="v-course">—</span>
-          </div>
-          <div class="info-row">
-            <span class="lbl">Status</span>
-            <span class="val" id="v-status">—</span>
-          </div>
-        </section>
-
-        <section class="info-section">
-          <h2>Abfahrt</h2>
-          <div class="info-row">
-            <span class="lbl">Hafen</span>
-            <span class="val" id="v-dep-port">—</span>
-          </div>
-          <div class="info-row">
-            <span class="lbl">ATD</span>
-            <span class="val" id="v-atd">—</span>
-          </div>
-        </section>
-
-        <section class="info-section">
-          <h2>Ankunft</h2>
-          <div class="info-row">
-            <span class="lbl">Zielhafen</span>
-            <span class="val" id="v-dst-port">—</span>
-          </div>
-          <div class="info-row">
-            <span class="lbl">ETA</span>
-            <span class="val" id="v-eta">—</span>
-          </div>
-        </section>
-
-        <section class="info-section" id="weather-section">
-          <h2>Wetter an Bord</h2>
-          <div id="weather-main" class="weather-main">
-            <img id="w-icon" class="weather-icon" src="" alt="" />
-            <div>
-              <div id="w-temp" class="weather-temp">—</div>
-              <div id="w-desc" class="weather-desc">—</div>
+        <div id="vessel-data">
+          <section class="info-section">
+            <h2>Letzte Position</h2>
+            <div class="info-row">
+              <span class="lbl">Breitengrad</span>
+              <span class="val" id="v-lat">—</span>
             </div>
-          </div>
-          <div class="info-row">
-            <span class="lbl">Gefühlt</span>
-            <span class="val" id="w-feels">—</span>
-          </div>
-          <div class="info-row">
-            <span class="lbl">Wind</span>
-            <span class="val" id="w-wind">—</span>
-          </div>
-          <div class="info-row">
-            <span class="lbl">Bewölkung</span>
-            <span class="val" id="w-clouds">—</span>
-          </div>
-          <div class="info-row">
-            <span class="lbl">Niederschlag</span>
-            <span class="val" id="w-rain">—</span>
-          </div>
-          <div class="info-row">
-            <span class="lbl">Sichtweite</span>
-            <span class="val" id="w-visibility">—</span>
-          </div>
-        </section>
+            <div class="info-row">
+              <span class="lbl">Längengrad</span>
+              <span class="val" id="v-lon">—</span>
+            </div>
+          </section>
+
+          <section class="info-section">
+            <h2>Navigation</h2>
+            <div class="info-row">
+              <span class="lbl">Geschwindigkeit</span>
+              <span class="val" id="v-speed">—</span>
+            </div>
+            <div class="info-row">
+              <span class="lbl">Kurs</span>
+              <span class="val" id="v-course">—</span>
+            </div>
+            <div class="info-row">
+              <span class="lbl">Status</span>
+              <span class="val" id="v-status">—</span>
+            </div>
+          </section>
+
+          <section class="info-section">
+            <h2>Abfahrt</h2>
+            <div class="info-row">
+              <span class="lbl">Hafen</span>
+              <span class="val" id="v-dep-port">—</span>
+            </div>
+            <div class="info-row">
+              <span class="lbl">ATD</span>
+              <span class="val" id="v-atd">—</span>
+            </div>
+          </section>
+
+          <section class="info-section">
+            <h2>Ankunft</h2>
+            <div class="info-row">
+              <span class="lbl">Zielhafen</span>
+              <span class="val" id="v-dst-port">—</span>
+            </div>
+            <div class="info-row">
+              <span class="lbl">ETA</span>
+              <span class="val" id="v-eta">—</span>
+            </div>
+          </section>
+
+          <section class="info-section" id="weather-section">
+            <h2>Wetter an letzter Position</h2>
+            <div id="weather-main" class="weather-main">
+              <img id="w-icon" class="weather-icon" src="" alt="" />
+              <div>
+                <div id="w-temp" class="weather-temp">—</div>
+                <div id="w-desc" class="weather-desc">—</div>
+              </div>
+            </div>
+            <div class="info-row">
+              <span class="lbl">Gefühlt</span>
+              <span class="val" id="w-feels">—</span>
+            </div>
+            <div class="info-row">
+              <span class="lbl">Wind</span>
+              <span class="val" id="w-wind">—</span>
+            </div>
+            <div class="info-row">
+              <span class="lbl">Bewölkung</span>
+              <span class="val" id="w-clouds">—</span>
+            </div>
+            <div class="info-row">
+              <span class="lbl">Niederschlag</span>
+              <span class="val" id="w-rain">—</span>
+            </div>
+            <div class="info-row">
+              <span class="lbl">Sichtweite</span>
+              <span class="val" id="w-visibility">—</span>
+            </div>
+          </section>
+        </div>
+
+        <div id="sidebar-footer">
+          <div id="last-updated">Noch keine Daten</div>
+          <button id="refresh-btn">↻ Aktualisieren</button>
+        </div>
       </div>
 
-      <div id="sidebar-footer">
-        <div id="last-updated">Noch keine Daten</div>
-        <button id="refresh-btn" onclick="loadData()">↻ Aktualisieren</button>
-      </div>
     </aside>
 
     <main id="map-container">
@@ -140,7 +154,7 @@
 
   </div>
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/maplibre-gl@4/dist/maplibre-gl.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

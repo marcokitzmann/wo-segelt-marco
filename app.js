@@ -1,6 +1,6 @@
 'use strict';
 
-let map, shipMarker, trackLine;
+let map, shipMarker, shipIconEl, pendingMapUpdate;
 
 // Cache-bust: neue Minute → neue Datei-Version
 function bust() {
@@ -36,26 +36,14 @@ function fmtDate(iso) {
 
 // ── Karte initialisieren ─────────────────────────────────────────────────────
 function initMap() {
-  map = L.map('map', { center: [71, 25], zoom: 4 });
-
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution:
-      '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors ' +
-      '© <a href="https://carto.com/attributions">CARTO</a>',
-    subdomains: 'abcd',
-    maxZoom: 19,
-  }).addTo(map);
-}
-
-// ── Schiff-Icon mit Kursrotation ─────────────────────────────────────────────
-function shipIcon(course) {
-  const angle = course ?? 0;
-  return L.divIcon({
-    className: '',
-    html: `<span class="ship-marker" style="transform:rotate(${angle}deg)">▲</span>`,
-    iconSize: [24, 24],
-    iconAnchor: [12, 12],
-    popupAnchor: [0, -16],
+  map = new maplibregl.Map({
+    container: 'map',
+    style: 'https://tiles.openfreemap.org/styles/bright',
+    center: [25, 71],   // [lng, lat]
+    zoom: 4,
+  });
+  map.once('load', () => {
+    if (pendingMapUpdate) { pendingMapUpdate(); pendingMapUpdate = null; }
   });
 }
 
@@ -67,41 +55,75 @@ function updateMap(pos, history) {
   }
   document.getElementById('no-data-overlay').classList.add('hidden');
 
-  const latlng = [pos.latitude, pos.longitude];
+  const lngLat = [pos.longitude, pos.latitude];  // MapLibre: [lng, lat]
 
-  // Historische Route
-  if (history.length > 1) {
-    const points = history.map(p => [p.lat, p.lon]);
-    if (trackLine) {
-      trackLine.setLatLngs(points);
-    } else {
-      trackLine = L.polyline(points, {
-        color: '#38bdf8',
-        weight: 2,
-        opacity: 0.55,
-        dashArray: '5 6',
-      }).addTo(map);
+  const apply = () => {
+    // Historische Route
+    const cutoff = Date.now() - 8 * 24 * 60 * 60 * 1000;
+    const recentHistory = history.filter(p => !p.ts || new Date(p.ts).getTime() >= cutoff);
+    if (recentHistory.length > 1) {
+      const coords = recentHistory.map(p => [p.lon, p.lat]);
+      const geojson = {
+        type: 'Feature',
+        geometry: { type: 'LineString', coordinates: coords },
+      };
+      if (map.getSource('track')) {
+        map.getSource('track').setData(geojson);
+      } else {
+        map.addSource('track', { type: 'geojson', data: geojson });
+        map.addLayer({
+          id: 'track',
+          type: 'line',
+          source: 'track',
+          paint: {
+            'line-color': '#f97316',
+            'line-width': 2.5,
+            'line-opacity': 0.75,
+            'line-dasharray': [2, 3],
+          },
+        });
+      }
     }
-  }
 
-  // Schiffs-Marker
-  if (shipMarker) {
-    shipMarker.setLatLng(latlng);
-    shipMarker.setIcon(shipIcon(pos.course));
+    // Schiffs-Marker
+    const speedStr  = pos.speed  != null ? `${pos.speed} kn`  : '';
+    const courseStr = pos.course != null ? `${pos.course}°`   : '';
+    const navLine   = [speedStr, courseStr].filter(Boolean).join(' · ');
+    const popupHtml =
+      `<strong>Roald Amundsen</strong><br>` +
+      `${fmtCoord(pos.latitude, 'lat')} / ${fmtCoord(pos.longitude, 'lon')}` +
+      (navLine ? `<br>${navLine}` : '');
+
+    if (shipMarker) {
+      shipMarker.setLngLat(lngLat);
+      if (shipIconEl) shipIconEl.style.transform = `rotate(${pos.course ?? 0}deg)`;
+      shipMarker.getPopup().setHTML(popupHtml);
+    } else {
+      const el = document.createElement('div');
+      el.className = 'ship-marker-wrapper';
+      const pulse = document.createElement('div');
+      pulse.className = 'ship-pulse';
+      shipIconEl = document.createElement('span');
+      shipIconEl.className = 'ship-marker';
+      shipIconEl.style.transform = `rotate(${pos.course ?? 0}deg)`;
+      shipIconEl.textContent = '▲';
+      el.appendChild(pulse);
+      el.appendChild(shipIconEl);
+
+      const popup = new maplibregl.Popup({ offset: 16 }).setHTML(popupHtml);
+      shipMarker = new maplibregl.Marker({ element: el })
+        .setLngLat(lngLat)
+        .setPopup(popup)
+        .addTo(map);
+      map.flyTo({ center: lngLat, zoom: 8 });
+    }
+  };
+
+  if (map.loaded()) {
+    apply();
   } else {
-    shipMarker = L.marker(latlng, { icon: shipIcon(pos.course) }).addTo(map);
-    map.setView(latlng, 7);
+    pendingMapUpdate = apply;
   }
-
-  const speedStr  = pos.speed  != null ? `${pos.speed} kn`  : '';
-  const courseStr = pos.course != null ? `${pos.course}°`   : '';
-  const navLine   = [speedStr, courseStr].filter(Boolean).join(' · ');
-
-  shipMarker.bindPopup(
-    `<strong>Roald Amundsen</strong><br>` +
-    `${fmtCoord(pos.latitude, 'lat')} / ${fmtCoord(pos.longitude, 'lon')}` +
-    (navLine ? `<br>${navLine}` : '')
-  );
 }
 
 // ── DOM-Helfer ───────────────────────────────────────────────────────────────
@@ -119,7 +141,6 @@ function updateWeather(w) {
   }
   if (section) section.classList.remove('weather-unavailable');
 
-  // Icon
   const iconEl = document.getElementById('w-icon');
   if (iconEl && w.icon) {
     iconEl.src = `https://openweathermap.org/img/wn/${w.icon}@2x.png`;
@@ -131,7 +152,6 @@ function updateWeather(w) {
   set('w-feels',  w.feels_like != null ? `${Math.round(w.feels_like)} °C` : null);
   set('w-clouds', w.clouds     != null ? `${w.clouds} %` : null);
 
-  // Wind: "5,2 m/s SW (Böen 8,1 m/s)"
   if (w.wind_speed != null) {
     let windStr = `${w.wind_speed.toFixed(1)} m/s`;
     if (w.wind_dir) windStr += ` ${w.wind_dir}`;
@@ -141,10 +161,8 @@ function updateWeather(w) {
     set('w-wind', null);
   }
 
-  // Niederschlag
   set('w-rain', w.rain_1h != null ? `${w.rain_1h.toFixed(1)} mm/h` : 'kein Regen');
 
-  // Sichtweite in km
   if (w.visibility != null) {
     const km = (w.visibility / 1000).toFixed(1);
     set('w-visibility', `${km} km`);
@@ -166,7 +184,6 @@ async function loadData() {
       getJSON('data/weather.json').catch(() => null),
     ]);
 
-    // Sidebar befüllen
     set('v-lat',      fmtCoord(pos.latitude,  'lat'));
     set('v-lon',      fmtCoord(pos.longitude, 'lon'));
     set('v-speed',    pos.speed  != null ? `${pos.speed} kn`  : null);
@@ -182,7 +199,6 @@ async function loadData() {
         ? `Aktualisiert: ${fmtDate(pos.last_updated)}`
         : 'Noch keine Positionsdaten';
 
-    // Marco-Banner
     const sailing = cfg.marco_sailing === true;
     document.getElementById('marco-sailing').classList.toggle('hidden', !sailing);
     document.getElementById('marco-shore').classList.toggle('hidden', sailing);
@@ -199,9 +215,31 @@ async function loadData() {
   }
 }
 
+// ── Tab-Navigation ───────────────────────────────────────────────────────────
+function switchTab(pageId) {
+  document.querySelectorAll('.sidebar-page').forEach(p => p.classList.add('hidden'));
+  document.getElementById(pageId).classList.remove('hidden');
+  document.querySelectorAll('.tab-btn[data-tab]').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.tab === pageId);
+  });
+}
+
+function toggleSidebar() {
+  const open = document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebar-overlay').classList.toggle('visible', open);
+}
+
 // ── Start ────────────────────────────────────────────────────────────────────
 initMap();
 loadData();
+
+document.getElementById('refresh-btn').addEventListener('click', loadData);
+document.getElementById('burger-btn').addEventListener('click', toggleSidebar);
+document.getElementById('sidebar-overlay').addEventListener('click', toggleSidebar);
+document.getElementById('sidebar-close').addEventListener('click', toggleSidebar);
+document.querySelectorAll('.tab-btn[data-tab]').forEach(btn => {
+  btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+});
 
 // Automatisch jede Stunde neu laden
 setInterval(loadData, 60 * 60 * 1000);

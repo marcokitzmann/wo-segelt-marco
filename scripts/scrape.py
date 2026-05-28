@@ -2,7 +2,7 @@
 """
 Scrapes vessel position from marinetraffic.live and saves to data/position.json
 and data/history.json. Optionally fetches weather data from OpenWeatherMap
-One Call API 4.0 and saves to data/weather.json.
+One Call API 3.0 and saves to data/weather.json.
 
 Requires playwright (pip install playwright &&
 python -m playwright install chromium --with-deps).
@@ -270,7 +270,7 @@ async def scrape() -> dict:
                 "Chrome/124.0.0.0 Safari/537.36"
             ),
             viewport={"width": 1280, "height": 900},
-            locale="en-US",
+            locale="de-DE",
         )
         page = await ctx.new_page()
 
@@ -408,15 +408,16 @@ def _wind_dir_label(deg: float | None) -> str:
 
 
 def fetch_weather(lat: float, lon: float) -> dict | None:
-    """Fetch current weather from OpenWeatherMap One Call API 4.0."""
+    """Fetch current weather from OpenWeatherMap One Call API 3.0."""
     api_key = os.getenv("OPENWEATHER_API_KEY", "").strip()
     if not api_key:
         print("OPENWEATHER_API_KEY not set – skipping weather fetch.", file=sys.stderr)
         return None
 
     url = (
-        f"https://api.openweathermap.org/data/4.0/onecall/current"
-        f"?lat={lat}&lon={lon}&units=metric&lang=de&appid={api_key}"
+        f"https://api.openweathermap.org/data/3.0/onecall"
+        f"?lat={lat}&lon={lon}&units=metric&lang=de"
+        f"&exclude=minutely,hourly,daily,alerts&appid={api_key}"
     )
     try:
         resp = requests.get(url, timeout=15)
@@ -426,7 +427,7 @@ def fetch_weather(lat: float, lon: float) -> dict | None:
         print(f"Weather API error: {exc}", file=sys.stderr)
         return None
 
-    d = (raw.get("data") or [{}])[0]
+    d = raw.get("current") or {}
     weather = (d.get("weather") or [{}])[0]
     wind_deg = d.get("wind_deg")
 
