@@ -34,6 +34,52 @@ function fmtDate(iso) {
   } catch { return iso; }
 }
 
+// ── Datumsparser für "05/26/2026, 03:59 PM" ─────────────────────────────────
+function parsePosDate(s) {
+  if (!s) return null;
+  const m = s.match(/(\d{2})\/(\d{2})\/(\d{4}),\s*(\d{1,2}):(\d{2})\s*(AM|PM)/i);
+  if (!m) return null;
+  let [, mo, dd, yyyy, hh, min, ap] = m;
+  hh = parseInt(hh);
+  if (ap.toUpperCase() === 'PM' && hh !== 12) hh += 12;
+  if (ap.toUpperCase() === 'AM' && hh === 12) hh = 0;
+  return new Date(Date.UTC(+yyyy, +mo - 1, +dd, hh, +min));
+}
+
+// ── Reise-Fortschrittsbalken ─────────────────────────────────────────────────
+function updateVoyageBar(pos) {
+  const bar = document.getElementById('voyage-bar');
+  if (!pos.departure_port || !pos.destination_port) {
+    bar.classList.add('hidden');
+    return;
+  }
+
+  let pct = null;
+  if (pos.route_progress != null) {
+    // Direkt gescrapter Wert von der Quelle (bereits 0–100)
+    pct = pos.route_progress;
+  } else {
+    // Fallback: zeitbasierte Schätzung via ATD → ETA
+    const atd = parsePosDate(pos.atd);
+    const eta = parsePosDate(pos.eta);
+    if (atd && eta && eta > atd) {
+      pct = Math.min(100, Math.max(0, (Date.now() - atd) / (eta - atd) * 100));
+    }
+  }
+
+  if (pct == null) {
+    bar.classList.add('hidden');
+    return;
+  }
+
+  const pctStr = pct.toFixed(1);
+  set('vb-dep', pos.departure_port);
+  set('vb-dst', pos.destination_port);
+  document.getElementById('vb-fill').style.width = `${pctStr}%`;
+  set('vb-pct', `${pctStr} %`);
+  bar.classList.remove('hidden');
+}
+
 // ── Karte initialisieren ─────────────────────────────────────────────────────
 function initMap() {
   map = new maplibregl.Map({
@@ -155,11 +201,11 @@ function updateWeather(w) {
   if (w.wind_speed != null) {
     let windStr = `${w.wind_speed.toFixed(1)} m/s`;
     if (w.wind_dir) windStr += ` ${w.wind_dir}`;
-    if (w.wind_gust != null) windStr += ` (Böen ${w.wind_gust.toFixed(1)} m/s)`;
     set('w-wind', windStr);
   } else {
     set('w-wind', null);
   }
+  set('w-gust', w.wind_gust != null ? `${w.wind_gust.toFixed(1)} m/s` : null);
 
   set('w-rain', w.rain_1h != null ? `${w.rain_1h.toFixed(1)} mm/h` : 'kein Regen');
 
@@ -184,8 +230,7 @@ async function loadData() {
       getJSON('data/weather.json').catch(() => null),
     ]);
 
-    set('v-lat',      fmtCoord(pos.latitude,  'lat'));
-    set('v-lon',      fmtCoord(pos.longitude, 'lon'));
+    set('v-pos', `${fmtCoord(pos.latitude, 'lat')}, ${fmtCoord(pos.longitude, 'lon')}`);
     set('v-speed',    pos.speed  != null ? `${pos.speed} kn`  : null);
     set('v-course',   pos.course != null ? `${pos.course}°`   : null);
     set('v-status',   pos.status);
@@ -203,6 +248,7 @@ async function loadData() {
     document.getElementById('marco-sailing').classList.toggle('hidden', !sailing);
     document.getElementById('marco-shore').classList.toggle('hidden', sailing);
 
+    updateVoyageBar(pos);
     updateMap(pos, history);
     updateWeather(weather);
 
@@ -229,11 +275,61 @@ function toggleSidebar() {
   document.getElementById('sidebar-overlay').classList.toggle('visible', open);
 }
 
+// ── Tagesmeldung RSS-Feed ────────────────────────────────────────────────────
+async function loadRssFeed() {
+  const FEED_URL = 'https://www.sailtraining.de/category/tagesmeldungen-de/feed/';
+
+  try {
+    const box = document.getElementById('rss-box');
+    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(FEED_URL)}`;
+    const res = await fetch(proxyUrl);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    if (!data.contents) throw new Error('Kein Inhalt vom Proxy');
+    if (data.status?.http_code && data.status.http_code >= 400) {
+      throw new Error(`Ursprungsserver: HTTP ${data.status.http_code}`);
+    }
+
+    // allorigins liefert manchmal Base64-Data-URIs
+    let xml = data.contents;
+    const b64match = xml.match(/^data:[^,]+;base64,(.+)$/s);
+    if (b64match) {
+      const bytes = Uint8Array.from(atob(b64match[1]), c => c.charCodeAt(0));
+      xml = new TextDecoder('utf-8').decode(bytes);
+    }
+
+    const doc = new DOMParser().parseFromString(xml, 'text/xml');
+    const item = doc.querySelector('item');
+    if (!item) throw new Error('Kein RSS-Item gefunden');
+
+    const title = item.querySelector('title')?.textContent?.trim();
+    const link  = item.querySelector('link')?.textContent?.trim()
+               || item.querySelector('guid')?.textContent?.trim();
+    const desc  = item.querySelector('description')?.textContent || '';
+    const tmp   = document.createElement('div');
+    tmp.innerHTML = desc;
+    const text  = (tmp.textContent || tmp.innerText || '').trim();
+
+    if (!title) throw new Error('Kein Titel im Feed');
+
+    const href = link || FEED_URL;
+    const titleEl = document.getElementById('rss-title');
+    titleEl.textContent = title;
+    titleEl.href = href;
+    document.getElementById('rss-link').href = href;
+    set('rss-excerpt', text);
+    box.classList.remove('hidden');
+  } catch (err) {
+    console.warn('RSS-Feed konnte nicht geladen werden:', err);
+  }
+}
+
 // ── Start ────────────────────────────────────────────────────────────────────
 initMap();
 loadData();
+loadRssFeed();
 
-document.getElementById('refresh-btn').addEventListener('click', loadData);
+document.getElementById('refresh-btn').addEventListener('click', () => { loadData(); loadRssFeed(); });
 document.getElementById('burger-btn').addEventListener('click', toggleSidebar);
 document.getElementById('sidebar-overlay').addEventListener('click', toggleSidebar);
 document.getElementById('sidebar-close').addEventListener('click', toggleSidebar);
@@ -242,4 +338,4 @@ document.querySelectorAll('.tab-btn[data-tab]').forEach(btn => {
 });
 
 // Automatisch jede Stunde neu laden
-setInterval(loadData, 60 * 60 * 1000);
+setInterval(() => { loadData(); loadRssFeed(); }, 60 * 60 * 1000);

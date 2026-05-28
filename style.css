@@ -101,6 +101,65 @@ h1 {
 
 .marco-shore .marco-title { color: #94a3b8; }
 
+.marco-sub {
+  font-size: 0.7rem;
+  color: #64748b;
+  margin-top: 2px;
+  line-height: 1.3;
+}
+
+
+/* ── RSS Tagesmeldung ──────────────────────── */
+.rss-box {
+  margin: 12px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: #1e293b;
+  border: 1px solid #2d3f55;
+}
+
+.rss-label {
+  font-size: 0.6rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #475569;
+  margin-bottom: 6px;
+}
+
+.rss-title {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #38bdf8;
+  text-decoration: none;
+  line-height: 1.4;
+  margin-bottom: 6px;
+}
+
+.rss-title:hover { text-decoration: underline; }
+
+.rss-excerpt {
+  font-size: 0.75rem;
+  color: #64748b;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.rss-more {
+  display: inline-block;
+  font-size: 0.72rem;
+  color: #38bdf8;
+  text-decoration: none;
+  opacity: 0.7;
+  transition: opacity 0.15s;
+}
+
+.rss-more:hover { opacity: 1; }
 
 /* ── Vessel Data ───────────────────────────── */
 #vessel-data { flex: 1; }
@@ -129,7 +188,7 @@ h1 {
 
 .lbl {
   font-size: 0.78rem;
-  color: #64748b;
+  color: #94a3b8;
   flex-shrink: 0;
 }
 
@@ -142,6 +201,11 @@ h1 {
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 160px;
+}
+
+#v-pos {
+  max-width: none;
+  white-space: nowrap;
 }
 
 /* ── Footer ────────────────────────────────── */
@@ -173,6 +237,67 @@ h1 {
 #refresh-btn:hover {
   background: #334155;
   color: #e2e8f0;
+}
+
+/* ── Voyage Progress Bar ───────────────────── */
+#voyage-bar {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 500;
+  background: rgba(15, 23, 42, 0.88);
+  border: 1px solid #1e293b;
+  border-radius: 10px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 260px;
+  max-width: 420px;
+  backdrop-filter: blur(4px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.vb-port {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: #94a3b8;
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+
+.vb-mid {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.vb-track {
+  width: 100%;
+  height: 5px;
+  background: #1e293b;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+#vb-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #0284c7, #38bdf8);
+  border-radius: 3px;
+  width: 0%;
+  transition: width 0.6s ease;
+}
+
+#vb-pct {
+  font-size: 0.68rem;
+  color: #38bdf8;
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
 }
 
 /* ── Map ───────────────────────────────────── */

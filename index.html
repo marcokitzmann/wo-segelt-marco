@@ -3,10 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Wo segelt Marco? — Roald Amundsen</title>
+  <title>Wo segelt Marco? | Schiffstracker Roald Amundsen</title>
   <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4/dist/maplibre-gl.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⛵</text></svg>" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -37,7 +38,17 @@
         </div>
         <div id="marco-shore" class="marco-banner marco-shore hidden">
           <span class="marco-icon">🏠</span>
-          <div class="marco-title">Marco ist an Land</div>
+          <div>
+            <div class="marco-title">Marco ist an Land</div>
+            <div class="marco-sub">Die Roald ist ohne ihn unterwegs</div>
+          </div>
+        </div>
+
+        <div id="rss-box" class="rss-box hidden">
+          <div class="rss-label">Letzte Tagesmeldung</div>
+          <a id="rss-title" class="rss-title" href="#" target="_blank" rel="noopener noreferrer"></a>
+          <div id="rss-excerpt" class="rss-excerpt"></div>
+          <a id="rss-link" class="rss-more" href="#" target="_blank" rel="noopener noreferrer">→ Vollständige Meldung</a>
         </div>
       </div>
 
@@ -53,12 +64,8 @@
           <section class="info-section">
             <h2>Letzte Position</h2>
             <div class="info-row">
-              <span class="lbl">Breitengrad</span>
-              <span class="val" id="v-lat">—</span>
-            </div>
-            <div class="info-row">
-              <span class="lbl">Längengrad</span>
-              <span class="val" id="v-lon">—</span>
+              <span class="lbl">Position</span>
+              <span class="val" id="v-pos">—</span>
             </div>
           </section>
 
@@ -120,6 +127,10 @@
               <span class="val" id="w-wind">—</span>
             </div>
             <div class="info-row">
+              <span class="lbl">Böen</span>
+              <span class="val" id="w-gust">—</span>
+            </div>
+            <div class="info-row">
               <span class="lbl">Bewölkung</span>
               <span class="val" id="w-clouds">—</span>
             </div>
@@ -143,6 +154,14 @@
     </aside>
 
     <main id="map-container">
+      <div id="voyage-bar" class="hidden">
+        <span class="vb-port" id="vb-dep">—</span>
+        <div class="vb-mid">
+          <div class="vb-track"><div id="vb-fill"></div></div>
+          <span id="vb-pct">—</span>
+        </div>
+        <span class="vb-port" id="vb-dst">—</span>
+      </div>
       <div id="map"></div>
       <div id="no-data-overlay" class="hidden">
         <div class="no-data-box">

@@ -32,7 +32,7 @@ DEBUG = os.getenv("SCRAPE_DEBUG", "").lower() in ("1", "true", "yes")
 
 MERGE_KEYS = (
     "latitude", "longitude", "speed", "course", "status",
-    "departure_port", "atd", "destination_port", "eta",
+    "departure_port", "atd", "destination_port", "eta", "route_progress",
 )
 
 
@@ -256,6 +256,7 @@ async def scrape() -> dict:
         "atd":              None,
         "destination_port": None,
         "eta":              None,
+        "route_progress":   None,
         "last_updated":     datetime.now(timezone.utc).isoformat(),
     }
 
@@ -310,6 +311,18 @@ async def scrape() -> dict:
 
         # Strategy 1: voyage section (ports, ATD, ETA)
         await scrape_voyage_section(page, data)
+
+        # Strategy 1b: route progress bar (.route-progress-bar style width)
+        progress_el = await page.query_selector(".route-progress-bar")
+        if progress_el:
+            try:
+                style = await progress_el.get_attribute("style")
+                m = re.search(r"width:\s*([\d.]+)%", style or "")
+                if m:
+                    data["route_progress"] = round(float(m.group(1)), 1)
+                    print(f"Route progress: {data['route_progress']} %")
+            except Exception:
+                pass
 
         # Strategy 2: table rows <td>label</td><td>value</td>
         for row in await page.query_selector_all("table tr"):
