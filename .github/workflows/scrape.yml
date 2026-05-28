@@ -1,0 +1,53 @@
+name: Schiffsposition aktualisieren
+
+on:
+  schedule:
+    # Jede Stunde, 10 Minuten nach der vollen Stunde
+    - cron: '10 * * * *'
+  workflow_dispatch:
+    inputs:
+      debug:
+        description: 'Debug-Ausgabe aktivieren'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Repository auschecken
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - name: Python einrichten
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Abhängigkeiten installieren
+        run: pip install playwright
+
+      - name: Playwright-Browser installieren
+        run: playwright install chromium --with-deps
+
+      - name: Schiffsposition scrapen
+        run: python scripts/scrape.py
+
+      - name: Daten committen und pushen
+        run: |
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name  "github-actions[bot]"
+          git add data/position.json data/history.json
+          if git diff --staged --quiet; then
+            echo "Keine Änderungen – nichts zu committen."
+          else
+            git commit -m "data: Schiffsposition $(date -u '+%Y-%m-%dT%H:%MZ')"
+            git push origin ${{ github.ref_name }}
+          fi

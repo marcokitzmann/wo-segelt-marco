@@ -1,0 +1,14 @@
+{
+  "vessel": "Roald Amundsen",
+  "mmsi": "211215170",
+  "latitude": null,
+  "longitude": null,
+  "speed": null,
+  "course": null,
+  "status": null,
+  "departure_port": null,
+  "atd": null,
+  "destination_port": null,
+  "eta": null,
+  "last_updated": null
+}

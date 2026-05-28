@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wo segelt Marco? — Roald Amundsen</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app">
+
+    <aside id="sidebar">
+      <div id="sidebar-header">
+        <div class="ship-emoji">🚢</div>
+        <div>
+          <h1>Roald Amundsen</h1>
+          <div class="mmsi">MMSI · 211215170</div>
+        </div>
+      </div>
+
+      <!-- Marco-Status-Banner -->
+      <div id="marco-sailing" class="marco-banner hidden">
+        <span class="marco-icon">⛵</span>
+        <div>
+          <div class="marco-title">Marco ist an Bord!</div>
+          <div class="marco-sub">Gute Reise & faire Winde</div>
+        </div>
+      </div>
+      <div id="marco-shore" class="marco-banner marco-shore hidden">
+        <span class="marco-icon">🏠</span>
+        <div>
+          <div class="marco-title">Marco ist an Land</div>
+          <div class="marco-sub">Schiff unterwegs ohne ihn</div>
+        </div>
+      </div>
+
+      <div id="vessel-data">
+        <section class="info-section">
+          <h2>Position</h2>
+          <div class="info-row">
+            <span class="lbl">Breitengrad</span>
+            <span class="val" id="v-lat">—</span>
+          </div>
+          <div class="info-row">
+            <span class="lbl">Längengrad</span>
+            <span class="val" id="v-lon">—</span>
+          </div>
+        </section>
+
+        <section class="info-section">
+          <h2>Navigation</h2>
+          <div class="info-row">
+            <span class="lbl">Geschwindigkeit</span>
+            <span class="val" id="v-speed">—</span>
+          </div>
+          <div class="info-row">
+            <span class="lbl">Kurs</span>
+            <span class="val" id="v-course">—</span>
+          </div>
+          <div class="info-row">
+            <span class="lbl">Status</span>
+            <span class="val" id="v-status">—</span>
+          </div>
+        </section>
+
+        <section class="info-section">
+          <h2>Abfahrt</h2>
+          <div class="info-row">
+            <span class="lbl">Hafen</span>
+            <span class="val" id="v-dep-port">—</span>
+          </div>
+          <div class="info-row">
+            <span class="lbl">ATD</span>
+            <span class="val" id="v-atd">—</span>
+          </div>
+        </section>
+
+        <section class="info-section">
+          <h2>Ankunft</h2>
+          <div class="info-row">
+            <span class="lbl">Zielhafen</span>
+            <span class="val" id="v-dst-port">—</span>
+          </div>
+          <div class="info-row">
+            <span class="lbl">ETA</span>
+            <span class="val" id="v-eta">—</span>
+          </div>
+        </section>
+      </div>
+
+      <div id="sidebar-footer">
+        <div id="last-updated">Noch keine Daten</div>
+        <button id="refresh-btn" onclick="loadData()">↻ Aktualisieren</button>
+      </div>
+    </aside>
+
+    <main id="map-container">
+      <div id="map"></div>
+      <div id="no-data-overlay" class="hidden">
+        <div class="no-data-box">
+          <div>📡</div>
+          <div>Noch keine Positionsdaten<br><small>Erster Scraper-Lauf steht aus</small></div>
+        </div>
+      </div>
+    </main>
+
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
