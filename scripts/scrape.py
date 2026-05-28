@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
 """
 Scrapes vessel position from marinetraffic.live and saves to data/position.json
-and data/history.json. Requires playwright (pip install playwright &&
+and data/history.json. Optionally fetches weather data from OpenWeatherMap
+One Call API 4.0 and saves to data/weather.json.
+
+Requires playwright (pip install playwright &&
 python -m playwright install chromium --with-deps).
+Set OPENWEATHER_API_KEY in environment or .env file.
 """
 
 import asyncio
@@ -12,6 +16,14 @@ import re
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
+
+try:
+    from dotenv import load_dotenv
+    load_dotenv(Path(__file__).resolve().parent.parent / ".env")
+except ImportError:
+    pass
+
+import requests
 
 URL = "https://marinetraffic.live/vessels/roald-amundsen-position/211215170/"
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
@@ -384,6 +396,64 @@ def update_history(pos: dict) -> None:
     print(f"History: {len(history)} entries saved.")
 
 
+# ── Weather fetch ─────────────────────────────────────────────────────────────
+
+_WIND_DIRS = ["N", "NO", "O", "SO", "S", "SW", "W", "NW"]
+
+
+def _wind_dir_label(deg: float | None) -> str:
+    if deg is None:
+        return ""
+    return _WIND_DIRS[round(deg / 45) % 8]
+
+
+def fetch_weather(lat: float, lon: float) -> dict | None:
+    """Fetch current weather from OpenWeatherMap One Call API 4.0."""
+    api_key = os.getenv("OPENWEATHER_API_KEY", "").strip()
+    if not api_key:
+        print("OPENWEATHER_API_KEY not set – skipping weather fetch.", file=sys.stderr)
+        return None
+
+    url = (
+        f"https://api.openweathermap.org/data/4.0/onecall/current"
+        f"?lat={lat}&lon={lon}&units=metric&lang=de&appid={api_key}"
+    )
+    try:
+        resp = requests.get(url, timeout=15)
+        resp.raise_for_status()
+        raw = resp.json()
+    except Exception as exc:
+        print(f"Weather API error: {exc}", file=sys.stderr)
+        return None
+
+    d = (raw.get("data") or [{}])[0]
+    weather = (d.get("weather") or [{}])[0]
+    wind_deg = d.get("wind_deg")
+
+    result = {
+        "lat":          raw.get("lat"),
+        "lon":          raw.get("lon"),
+        "timezone":     raw.get("timezone"),
+        "temp":         d.get("temp"),
+        "feels_like":   d.get("feels_like"),
+        "humidity":     d.get("humidity"),
+        "pressure":     d.get("pressure"),
+        "wind_speed":   d.get("wind_speed"),
+        "wind_gust":    d.get("wind_gust"),
+        "wind_deg":     wind_deg,
+        "wind_dir":     _wind_dir_label(wind_deg),
+        "clouds":       d.get("clouds"),
+        "visibility":   d.get("visibility"),
+        "uvi":          d.get("uvi"),
+        "description":  weather.get("description"),
+        "icon":         weather.get("icon"),
+        "last_updated": datetime.now(timezone.utc).isoformat(),
+    }
+    print("── weather data ──")
+    print(json.dumps(result, indent=2))
+    return result
+
+
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 def main() -> None:
@@ -407,6 +477,20 @@ def main() -> None:
     print("position.json written.")
 
     update_history(new_data)
+
+    # Wetterdaten nur abrufen wenn Koordinaten vorliegen
+    lat, lon = new_data.get("latitude"), new_data.get("longitude")
+    if lat is not None and lon is not None:
+        weather = fetch_weather(lat, lon)
+        if weather:
+            weather_file = DATA_DIR / "weather.json"
+            weather_file.write_text(
+                json.dumps(weather, indent=2, ensure_ascii=False), encoding="utf-8"
+            )
+            print("weather.json written.")
+    else:
+        print("No coordinates – weather fetch skipped.")
+
     print("Done.")
 
 

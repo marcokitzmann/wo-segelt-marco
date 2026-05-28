@@ -228,6 +228,41 @@ h1 {
   font-family: 'Inter', sans-serif;
 }
 
+/* ── Wetter ────────────────────────────────── */
+.weather-main {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.weather-icon {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.4));
+}
+
+.weather-temp {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #f1f5f9;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+}
+
+.weather-desc {
+  font-size: 0.75rem;
+  color: #64748b;
+  margin-top: 2px;
+  text-transform: capitalize;
+}
+
+#weather-section.weather-unavailable .weather-main,
+#weather-section.weather-unavailable .info-row {
+  opacity: 0.35;
+}
+
 /* ── Responsive ────────────────────────────── */
 @media (max-width: 640px) {
   #app { flex-direction: column; }

@@ -110,16 +110,58 @@ function set(id, text) {
   if (el) el.textContent = text || '—';
 }
 
+// ── Wetter anzeigen ──────────────────────────────────────────────────────────
+function updateWeather(w) {
+  const section = document.getElementById('weather-section');
+  if (!w || w.temp == null) {
+    if (section) section.classList.add('weather-unavailable');
+    return;
+  }
+  if (section) section.classList.remove('weather-unavailable');
+
+  // Icon
+  const iconEl = document.getElementById('w-icon');
+  if (iconEl && w.icon) {
+    iconEl.src = `https://openweathermap.org/img/wn/${w.icon}@2x.png`;
+    iconEl.alt = w.description || '';
+  }
+
+  set('w-temp',       `${Math.round(w.temp)} °C`);
+  set('w-desc',       w.description ?? null);
+  set('w-feels',      w.feels_like  != null ? `${Math.round(w.feels_like)} °C` : null);
+  set('w-humidity',   w.humidity    != null ? `${w.humidity} %` : null);
+  set('w-pressure',   w.pressure    != null ? `${w.pressure} hPa` : null);
+
+  // Wind: "5,2 m/s SW (Böen 8,1 m/s)"
+  if (w.wind_speed != null) {
+    let windStr = `${w.wind_speed.toFixed(1)} m/s`;
+    if (w.wind_dir) windStr += ` ${w.wind_dir}`;
+    if (w.wind_gust != null) windStr += ` (Böen ${w.wind_gust.toFixed(1)} m/s)`;
+    set('w-wind', windStr);
+  } else {
+    set('w-wind', null);
+  }
+
+  // Sichtweite in km
+  if (w.visibility != null) {
+    const km = (w.visibility / 1000).toFixed(1);
+    set('w-visibility', `${km} km`);
+  } else {
+    set('w-visibility', null);
+  }
+}
+
 // ── Daten laden und anzeigen ─────────────────────────────────────────────────
 async function loadData() {
   const btn = document.getElementById('refresh-btn');
   if (btn) btn.textContent = '⟳ Lädt…';
 
   try {
-    const [pos, history, cfg] = await Promise.all([
+    const [pos, history, cfg, weather] = await Promise.all([
       getJSON('data/position.json'),
       getJSON('data/history.json').catch(() => []),
       getJSON('config.json').catch(() => ({})),
+      getJSON('data/weather.json').catch(() => null),
     ]);
 
     // Sidebar befüllen
@@ -144,6 +186,7 @@ async function loadData() {
     document.getElementById('marco-shore').classList.toggle('hidden', sailing);
 
     updateMap(pos, history);
+    updateWeather(weather);
 
   } catch (err) {
     console.error('Ladefehler:', err);

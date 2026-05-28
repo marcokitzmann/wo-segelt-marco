@@ -36,17 +36,20 @@ jobs:
       - name: Playwright-Browser installieren
         run: python -m playwright install chromium --with-deps
 
-      - name: Schiffsposition scrapen
+      - name: Schiffsposition und Wetter scrapen
+        env:
+          OPENWEATHER_API_KEY: ${{ secrets.OPENWEATHER_API_KEY }}
+          SCRAPE_DEBUG: ${{ inputs.debug && '1' || '' }}
         run: python scripts/scrape.py
 
       - name: Daten committen und pushen
         run: |
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git config user.name  "github-actions[bot]"
-          git add data/position.json data/history.json
+          git add data/position.json data/history.json data/weather.json
           if git diff --staged --quiet; then
             echo "Keine Änderungen – nichts zu committen."
           else
-            git commit -m "data: Schiffsposition $(date -u '+%Y-%m-%dT%H:%MZ')"
+            git commit -m "data: Schiffsposition + Wetter $(date -u '+%Y-%m-%dT%H:%MZ')"
             git push origin HEAD:${{ github.ref_name }}
           fi
