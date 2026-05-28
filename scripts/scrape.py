@@ -2,11 +2,12 @@
 """
 Scrapes vessel position from marinetraffic.live and saves to data/position.json
 and data/history.json. Requires playwright (pip install playwright &&
-playwright install chromium --with-deps).
+python -m playwright install chromium --with-deps).
 """
 
 import asyncio
 import json
+import os
 import re
 import sys
 from datetime import datetime, timezone
@@ -15,9 +16,23 @@ from pathlib import Path
 URL = "https://marinetraffic.live/vessels/roald-amundsen-position/211215170/"
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 MAX_HISTORY = 720  # ~30 days at 1 h interval
+DEBUG = os.getenv("SCRAPE_DEBUG", "").lower() in ("1", "true", "yes")
+
+MERGE_KEYS = (
+    "latitude", "longitude", "speed", "course", "status",
+    "departure_port", "atd", "destination_port", "eta",
+)
 
 
 # ── Coordinate parsing ────────────────────────────────────────────────────────
+
+def _check(val: float, kind: str) -> float | None:
+    if kind == "lat" and -90 <= val <= 90:
+        return round(val, 6)
+    if kind == "lon" and -180 <= val <= 180:
+        return round(val, 6)
+    return None
+
 
 def parse_coord(raw: str, kind: str) -> float | None:
     """Convert various coordinate formats to decimal degrees."""
@@ -25,145 +40,171 @@ def parse_coord(raw: str, kind: str) -> float | None:
         return None
     s = raw.strip()
 
-    # "69.2053° N" or "69.2053 N" or "69.2053N"
-    m = re.search(r'(\d{1,3}\.\d+)\s*°?\s*([NSEWnsew])', s)
+    # "69.2053° N" / "69.2053 N" / "69.2053N"
+    m = re.search(r"(\d{1,3}\.\d+)\s*°?\s*([NSEWnsew])", s)
     if m:
         val = float(m.group(1))
-        if m.group(2).upper() in ('S', 'W'):
+        if m.group(2).upper() in ("S", "W"):
             val = -val
         return _check(val, kind)
 
-    # "69°12.30'N" or "69°12'18\"N"
-    m = re.search(r'(\d{1,3})[°\s]\s*(\d{1,2})[.\'](\d*)[\'"]?\s*([NSEWnsew])', s)
+    # "69°12.30'N" / "69°12'18\"N"
+    m = re.search(r"(\d{1,3})[°\s]\s*(\d{1,2})[.\'](\d*)[\'\"]\s*([NSEWnsew])", s)
     if m:
         deg = int(m.group(1))
         minutes = int(m.group(2))
-        sec_frac = float('0.' + m.group(3)) if m.group(3) else 0.0
+        sec_frac = float("0." + m.group(3)) if m.group(3) else 0.0
         val = deg + (minutes + sec_frac) / 60
-        if m.group(4).upper() in ('S', 'W'):
+        if m.group(4).upper() in ("S", "W"):
             val = -val
         return _check(val, kind)
 
     # plain decimal (possibly negative)
-    m = re.search(r'(-?\d{1,3}\.\d+)', s)
+    m = re.search(r"(-?\d{1,3}\.\d+)", s)
     if m:
         return _check(float(m.group(1)), kind)
 
     return None
 
 
-def _check(val: float, kind: str) -> float | None:
-    if kind == 'lat' and -90 <= val <= 90:
-        return round(val, 6)
-    if kind == 'lon' and -180 <= val <= 180:
-        return round(val, 6)
-    return None
-
-
 def parse_float(raw: str) -> float | None:
-    m = re.search(r'(\d+\.?\d*)', raw or '')
+    m = re.search(r"(\d+\.?\d*)", raw or "")
     return float(m.group(1)) if m else None
 
 
 def parse_position(raw: str) -> tuple[float | None, float | None]:
-    """Parse combined position like '55.70, 12.69'."""
-    m = re.match(r'(-?\d{1,3}\.\d+)\s*,\s*(-?\d{1,3}\.\d+)', (raw or '').strip())
+    """Parse combined 'lat, lon' string like '55.70, 12.69'."""
+    m = re.search(r"(-?\d{1,3}\.\d+)\s*,\s*(-?\d{1,3}\.\d+)", (raw or "").strip())
     if not m:
         return None, None
-    return _check(float(m.group(1)), 'lat'), _check(float(m.group(2)), 'lon')
+    return _check(float(m.group(1)), "lat"), _check(float(m.group(2)), "lon")
 
 
 # ── Field mapping ─────────────────────────────────────────────────────────────
 
-_LAT_KEYS  = ('latitude', 'lat', 'breite')
-_LON_KEYS  = ('longitude', 'lon', 'lng', 'längengrad', 'laengengrad')
-_POS_KEYS  = ('position', 'pos', 'coordinates', 'koordinaten')
-_SPD_KEYS  = ('speed', 'speed (sog)', 'sog', 'geschwindigkeit', 'tempo')
-_CRS_KEYS  = ('course', 'course (cog)', 'cog', 'heading', 'kurs', 'hdg')
-_STA_KEYS  = ('status', 'nav status', 'nav. status', 'navigationsstatus')
-_ATD_KEYS  = ('atd', 'actual time of departure', 'departed', 'abfahrtszeit')
-_ETA_KEYS  = ('eta', 'estimated time of arrival', 'ankunftszeit')
+_LAT_KEYS      = ("latitude", "lat", "breite", "breitengrad")
+_LON_KEYS      = ("longitude", "lon", "lng", "längengrad", "laengengrad")
+_POS_KEYS      = ("position", "pos", "coordinates", "koordinaten")
+_SPD_KEYS      = ("speed", "speed (sog)", "sog", "geschwindigkeit", "tempo")
+_CRS_KEYS      = ("course", "course (cog)", "cog", "heading", "kurs", "hdg")
+_STA_KEYS      = ("status", "nav status", "nav. status", "navigationsstatus")
+_ATD_KEYS      = ("atd", "actual time of departure", "departed", "abfahrtszeit")
+_ETA_KEYS      = ("eta", "estimated time of arrival", "ankunftszeit")
+_DEP_PORT_KEYS = (
+    "departure port", "last port", "from port", "abfahrtshafen",
+    "letzter hafen", "departure", "from", "last port of call",
+)
+_DST_PORT_KEYS = (
+    "destination", "destination port", "next port", "zielhafen",
+    "to port", "to", "next port of call",
+)
 
-_DEP_PORT_KEYS = ('departure port', 'last port', 'from port', 'abfahrtshafen',
-                  'letzter hafen', 'departure', 'from', 'last port of call')
-_DST_PORT_KEYS = ('destination', 'destination port', 'next port', 'zielhafen',
-                  'to port', 'to', 'next port of call')
+_EMPTY = {"", "—", "-", "n/a", "unknown"}
 
 
-def apply(data: dict, label: str, value: str):
-    """Map a label → value pair into the data dict."""
-    if not value or value.strip() in ('', '—', '-', 'N/A', 'n/a', 'unknown'):
+def _set_if_none(data: dict, key: str, val) -> None:
+    """Write val into data[key] only when the current value is None."""
+    if val is not None and data.get(key) is None:
+        data[key] = val
+
+
+def apply(data: dict, label: str, value: str) -> None:
+    """Map a scraped label/value pair into the data dict."""
+    if not value or value.strip().lower() in _EMPTY:
         return
-    lbl = label.lower().strip().rstrip(':').strip()
+    lbl = label.lower().strip().rstrip(":").strip()
     val = value.strip()
 
     if lbl in _POS_KEYS:
         lat, lon = parse_position(val)
-        if lat is not None:
-            data['latitude'] = lat
-        if lon is not None:
-            data['longitude'] = lon
+        _set_if_none(data, "latitude", lat)
+        _set_if_none(data, "longitude", lon)
     elif lbl in _LAT_KEYS:
-        data['latitude']       = parse_coord(val, 'lat') or data['latitude']
+        _set_if_none(data, "latitude", parse_coord(val, "lat"))
     elif lbl in _LON_KEYS:
-        data['longitude']      = parse_coord(val, 'lon') or data['longitude']
+        _set_if_none(data, "longitude", parse_coord(val, "lon"))
     elif lbl in _SPD_KEYS:
-        data['speed']          = parse_float(val) or data['speed']
+        _set_if_none(data, "speed", parse_float(val))
     elif lbl in _CRS_KEYS:
-        data['course']         = parse_float(val) or data['course']
+        _set_if_none(data, "course", parse_float(val))
     elif lbl in _STA_KEYS:
-        data['status']         = val or data['status']
+        _set_if_none(data, "status", val)
     elif lbl in _DEP_PORT_KEYS:
-        data['departure_port'] = val or data['departure_port']
+        _set_if_none(data, "departure_port", val)
     elif lbl in _ATD_KEYS:
-        data['atd']            = val or data['atd']
+        _set_if_none(data, "atd", val)
     elif lbl in _DST_PORT_KEYS:
-        data['destination_port'] = val or data['destination_port']
+        _set_if_none(data, "destination_port", val)
     elif lbl in _ETA_KEYS:
-        data['eta']            = val or data['eta']
+        _set_if_none(data, "eta", val)
 
 
 # ── Regex fallback on raw page text ──────────────────────────────────────────
 
-def regex_extract(data: dict, text: str):
-    # "69.2053° N / 18.9600° E"  or  "69.2053 N, 18.9600 E"
-    m = re.search(
-        r'(-?\d{1,3}\.\d{2,})\s*°?\s*([NS])\s*[/,]?\s*(-?\d{1,3}\.\d{2,})\s*°?\s*([EW])',
-        text, re.IGNORECASE
-    )
-    if m and data['latitude'] is None:
-        lat = float(m.group(1)) * (-1 if m.group(2).upper() == 'S' else 1)
-        lon = float(m.group(3)) * (-1 if m.group(4).upper() == 'W' else 1)
-        data['latitude']  = _check(lat, 'lat')
-        data['longitude'] = _check(lon, 'lon')
-
-    if data['latitude'] is None:
-        lat, lon = parse_position(text)
-        if lat is not None:
-            data['latitude'] = lat
-        if lon is not None:
-            data['longitude'] = lon
-
-    if data['speed'] is None:
-        m = re.search(r'(?:speed|sog|tempo)[^\d]*(\d+\.?\d*)', text, re.IGNORECASE)
+def regex_extract(data: dict, text: str) -> None:
+    if data["latitude"] is None:
+        # "69.2053° N / 18.9600° E" or "69.2053 N, 18.9600 E"
+        m = re.search(
+            r"(-?\d{1,3}\.\d{2,})\s*°?\s*([NS])\s*[/,]?\s*(-?\d{1,3}\.\d{2,})\s*°?\s*([EW])",
+            text, re.IGNORECASE,
+        )
         if m:
-            data['speed'] = float(m.group(1))
+            lat = float(m.group(1)) * (-1 if m.group(2).upper() == "S" else 1)
+            lon = float(m.group(3)) * (-1 if m.group(4).upper() == "W" else 1)
+            _set_if_none(data, "latitude",  _check(lat, "lat"))
+            _set_if_none(data, "longitude", _check(lon, "lon"))
 
-    if data['course'] is None:
-        m = re.search(r'(?:course|cog|heading|kurs)[^\d]*(\d+\.?\d*)', text, re.IGNORECASE)
+    if data["latitude"] is None:
+        lat, lon = parse_position(text)   # re.search – works anywhere in text
+        _set_if_none(data, "latitude",  lat)
+        _set_if_none(data, "longitude", lon)
+
+    if data["speed"] is None:
+        m = re.search(r"(?:speed|sog|tempo)[^\d]*(\d+\.?\d*)", text, re.IGNORECASE)
         if m:
-            data['course'] = float(m.group(1))
+            data["speed"] = float(m.group(1))
+
+    if data["course"] is None:
+        m = re.search(r"(?:course|cog|heading|kurs)[^\d]*(\d+\.?\d*)", text, re.IGNORECASE)
+        if m:
+            data["course"] = float(m.group(1))
+
+
+# ── JSON-LD / embedded JSON helper ───────────────────────────────────────────
+
+def _from_jsonld(data: dict, obj) -> None:
+    """Recursively look for lat/lon/speed keys in a parsed JSON object."""
+    if isinstance(obj, dict):
+        for k, v in obj.items():
+            kl = k.lower()
+            if "latitude" in kl:
+                num = float(v) if isinstance(v, (int, float)) else (
+                    float(v) if isinstance(v, str) and re.fullmatch(r"-?\d+\.?\d*", v.strip()) else None
+                )
+                _set_if_none(data, "latitude",  _check(num, "lat") if num is not None else None)
+            elif "longitude" in kl:
+                num = float(v) if isinstance(v, (int, float)) else (
+                    float(v) if isinstance(v, str) and re.fullmatch(r"-?\d+\.?\d*", v.strip()) else None
+                )
+                _set_if_none(data, "longitude", _check(num, "lon") if num is not None else None)
+            elif "speed" in kl and isinstance(v, (int, float)):
+                _set_if_none(data, "speed", float(v))
+            else:
+                _from_jsonld(data, v)
+    elif isinstance(obj, list):
+        for item in obj:
+            _from_jsonld(data, item)
 
 
 # ── Voyage section (ports, ATD, ETA) ─────────────────────────────────────────
 
 async def scrape_voyage_section(page, data: dict) -> None:
     """Extract departure/arrival ports and times from .voyage-section."""
-    section = await page.query_selector('.voyage-section')
+    section = await page.query_selector(".voyage-section")
     if not section:
         return
 
-    voyage = await section.evaluate('''(el) => {
+    voyage: dict = await section.evaluate("""(el) => {
         const out = { atd: null, eta: null, departure_port: null, destination_port: null };
 
         for (const block of el.querySelectorAll('div[style*="flex: 1"]')) {
@@ -180,12 +221,10 @@ async def scrape_voyage_section(page, data: dict) -> None:
         if (ports[1]) out.destination_port = ports[1].textContent.trim();
 
         return out;
-    }''')
+    }""")
 
-    for key in ('atd', 'eta', 'departure_port', 'destination_port'):
-        val = voyage.get(key)
-        if val:
-            data[key] = val
+    for key in ("atd", "eta", "departure_port", "destination_port"):
+        _set_if_none(data, key, voyage.get(key) or None)
 
 
 # ── Playwright scraper ────────────────────────────────────────────────────────
@@ -194,218 +233,182 @@ async def scrape() -> dict:
     from playwright.async_api import async_playwright
 
     base: dict = {
-        'vessel': 'Roald Amundsen',
-        'mmsi': '211215170',
-        'latitude': None,
-        'longitude': None,
-        'speed': None,
-        'course': None,
-        'status': None,
-        'departure_port': None,
-        'atd': None,
-        'destination_port': None,
-        'eta': None,
-        'last_updated': datetime.now(timezone.utc).isoformat(),
+        "vessel":           "Roald Amundsen",
+        "mmsi":             "211215170",
+        "latitude":         None,
+        "longitude":        None,
+        "speed":            None,
+        "course":           None,
+        "status":           None,
+        "departure_port":   None,
+        "atd":              None,
+        "destination_port": None,
+        "eta":              None,
+        "last_updated":     datetime.now(timezone.utc).isoformat(),
     }
 
     async with async_playwright() as pw:
         browser = await pw.chromium.launch(
-            args=['--no-sandbox', '--disable-dev-shm-usage', '--disable-gpu']
+            args=["--no-sandbox", "--disable-dev-shm-usage", "--disable-gpu"]
         )
         ctx = await browser.new_context(
             user_agent=(
-                'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
-                'AppleWebKit/537.36 (KHTML, like Gecko) '
-                'Chrome/124.0.0.0 Safari/537.36'
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                "AppleWebKit/537.36 (KHTML, like Gecko) "
+                "Chrome/124.0.0.0 Safari/537.36"
             ),
-            viewport={'width': 1280, 'height': 900},
-            locale='en-US',
+            viewport={"width": 1280, "height": 900},
+            locale="en-US",
         )
         page = await ctx.new_page()
 
-        print(f'→ Fetching {URL}', flush=True)
+        print(f"→ Fetching {URL}", flush=True)
         try:
-            await page.goto(URL, wait_until='domcontentloaded', timeout=60_000)
-            await page.wait_for_timeout(5_000)
+            await page.goto(URL, wait_until="domcontentloaded", timeout=60_000)
         except Exception as exc:
-            print(f'Navigation error: {exc}', file=sys.stderr)
+            print(f"Navigation error: {exc}", file=sys.stderr)
             await browser.close()
             return base
 
-        # Dump first 3000 chars of body text for debugging
-        body_text = await page.evaluate('document.body.innerText')
-        print('── page text (first 3000 chars) ──')
-        print(body_text[:3000])
-        print('──────────────────────────────────')
+        try:
+            await page.wait_for_selector(
+                ".ship-details-grid .detail-item, .voyage-section",
+                timeout=20_000,
+            )
+        except Exception:
+            print("Warning: expected selectors not found within timeout.", file=sys.stderr)
+
+        body_text = await page.evaluate("document.body.innerText")
+        if DEBUG:
+            print("── page text (first 3000 chars) ──")
+            print(body_text[:3000])
+            print("──────────────────────────────────")
 
         data = dict(base)
 
-        try:
-            await page.wait_for_selector(
-                '.ship-details-grid .detail-item, .voyage-section',
-                timeout=15_000,
-            )
-        except Exception:
-            pass
-
-        # Strategy 0: marinetraffic.live ship-details grid
-        for item in await page.query_selector_all('.ship-details-grid .detail-item'):
+        # Strategy 0: marinetraffic.live ship-details grid (.detail-label / .detail-value)
+        for item in await page.query_selector_all(".ship-details-grid .detail-item"):
             try:
-                lbl_el = await item.query_selector('.detail-label')
-                val_el = await item.query_selector('.detail-value')
+                lbl_el = await item.query_selector(".detail-label")
+                val_el = await item.query_selector(".detail-value")
                 if lbl_el and val_el:
-                    lbl = (await lbl_el.inner_text()).strip()
-                    val = (await val_el.inner_text()).strip()
-                    apply(data, lbl, val)
+                    apply(data, await lbl_el.inner_text(), await val_el.inner_text())
             except Exception:
                 pass
 
+        # Strategy 1: voyage section (ports, ATD, ETA)
         await scrape_voyage_section(page, data)
 
-        # Strategy 1: table rows  (label in first cell, value in second)
-        rows = await page.query_selector_all('table tr')
-        for row in rows:
-            cells = await row.query_selector_all('td, th')
+        # Strategy 2: table rows <td>label</td><td>value</td>
+        for row in await page.query_selector_all("table tr"):
+            cells = await row.query_selector_all("td, th")
             if len(cells) >= 2:
-                lbl = (await cells[0].inner_text()).strip()
-                val = (await cells[1].inner_text()).strip()
-                apply(data, lbl, val)
+                apply(data, await cells[0].inner_text(), await cells[1].inner_text())
 
-        # Strategy 2: definition lists  <dt>label</dt><dd>value</dd>
-        dts = await page.query_selector_all('dt')
-        for dt in dts:
+        # Strategy 3: definition lists <dt>label</dt><dd>value</dd>
+        for dt in await page.query_selector_all("dt"):
             try:
-                lbl = (await dt.inner_text()).strip()
-                dd  = await page.evaluate_handle(
-                    'el => el.nextElementSibling', dt
-                )
-                val = await page.evaluate('el => el ? el.innerText : ""', dd)
-                apply(data, lbl, str(val).strip())
+                dd  = await page.evaluate_handle("el => el.nextElementSibling", dt)
+                val = await page.evaluate("el => el ? el.innerText : ''", dd)
+                apply(data, await dt.inner_text(), str(val))
             except Exception:
                 pass
 
-        # Strategy 3: generic key/value divs  (.label + .value, .key + .data, …)
-        for pair_sel in [
-            ('.detail-label, .label, .key, .info-label, .field-label',
-             '.detail-value, .value, .data, .info-value, .field-value'),
-        ]:
-            lbls = await page.query_selector_all(pair_sel[0])
-            for lbl_el in lbls:
-                try:
-                    lbl = (await lbl_el.inner_text()).strip()
-                    sib = await page.evaluate_handle(
-                        'el => el.nextElementSibling', lbl_el
-                    )
-                    val = await page.evaluate('el => el ? el.innerText : ""', sib)
-                    apply(data, lbl, str(val).strip())
-                except Exception:
-                    pass
+        # Strategy 4: generic label/value sibling divs (excluding detail-grid, handled above)
+        for lbl_el in await page.query_selector_all(
+            ".label, .key, .info-label, .field-label"
+        ):
+            try:
+                sib = await page.evaluate_handle("el => el.nextElementSibling", lbl_el)
+                val = await page.evaluate("el => el ? el.innerText : ''", sib)
+                apply(data, await lbl_el.inner_text(), str(val))
+            except Exception:
+                pass
 
-        # Strategy 4: JSON-LD structured data
+        # Strategy 5: JSON-LD structured data
         for script in await page.query_selector_all('script[type="application/ld+json"]'):
             try:
-                obj = json.loads(await script.inner_text())
-                _from_jsonld(data, obj)
+                _from_jsonld(data, json.loads(await script.inner_text()))
             except Exception:
                 pass
 
-        # Strategy 5: embedded JSON in regular script tags
-        for script in await page.query_selector_all('script:not([src])'):
+        # Strategy 6: embedded JSON in inline script tags
+        for script in await page.query_selector_all("script:not([src])"):
             try:
                 src = await script.inner_text()
-                for m in re.finditer(r'\{[^{}]{20,}\}', src):
+                for m in re.finditer(r"\{[^{}]{20,}\}", src):
                     try:
-                        obj = json.loads(m.group())
-                        _from_jsonld(data, obj)
+                        _from_jsonld(data, json.loads(m.group()))
                     except Exception:
                         pass
             except Exception:
                 pass
 
-        # Strategy 6: regex fallback on full text
+        # Strategy 7: regex fallback on full body text
         regex_extract(data, body_text)
 
         await browser.close()
 
-    print('── scraped data ──')
+    print("── scraped data ──")
     print(json.dumps(data, indent=2))
     return data
 
 
-def _from_jsonld(data: dict, obj):
-    """Recursively look for lat/lon/speed keys in a JSON object."""
-    if isinstance(obj, dict):
-        for k, v in obj.items():
-            kl = k.lower()
-            if 'latitude'  in kl and isinstance(v, (int, float)) and data['latitude']  is None:
-                data['latitude']  = _check(float(v), 'lat')
-            elif 'longitude' in kl and isinstance(v, (int, float)) and data['longitude'] is None:
-                data['longitude'] = _check(float(v), 'lon')
-            elif 'speed'     in kl and isinstance(v, (int, float)) and data['speed']     is None:
-                data['speed']     = float(v)
-            else:
-                _from_jsonld(data, v)
-    elif isinstance(obj, list):
-        for item in obj:
-            _from_jsonld(data, item)
-
-
 # ── History management ────────────────────────────────────────────────────────
 
-def update_history(pos: dict):
-    path = DATA_DIR / 'history.json'
+def update_history(pos: dict) -> None:
+    path = DATA_DIR / "history.json"
     history: list = []
     if path.exists():
         try:
-            history = json.loads(path.read_text())
+            history = json.loads(path.read_text(encoding="utf-8"))
+            if not isinstance(history, list):
+                history = []
         except Exception:
             history = []
 
-    if pos.get('latitude') and pos.get('longitude'):
+    if pos.get("latitude") is not None and pos.get("longitude") is not None:
         entry = {
-            'lat': pos['latitude'],
-            'lon': pos['longitude'],
-            'speed':  pos.get('speed'),
-            'course': pos.get('course'),
-            'ts':     pos.get('last_updated'),
+            "lat":    pos["latitude"],
+            "lon":    pos["longitude"],
+            "speed":  pos.get("speed"),
+            "course": pos.get("course"),
+            "ts":     pos.get("last_updated"),
         }
-        # Skip exact duplicate
-        if not history or (
-            history[-1]['lat'] != entry['lat'] or
-            history[-1]['lon'] != entry['lon']
-        ):
+        last = history[-1] if history else {}
+        if last.get("lat") != entry["lat"] or last.get("lon") != entry["lon"]:
             history.append(entry)
 
     history = history[-MAX_HISTORY:]
-    path.write_text(json.dumps(history, indent=2, ensure_ascii=False))
-    print(f'History: {len(history)} entries saved.')
+    path.write_text(json.dumps(history, indent=2, ensure_ascii=False), encoding="utf-8")
+    print(f"History: {len(history)} entries saved.")
 
 
 # ── Main ──────────────────────────────────────────────────────────────────────
 
-def main():
+def main() -> None:
     DATA_DIR.mkdir(parents=True, exist_ok=True)
 
     new_data = asyncio.run(scrape())
 
-    # Merge with existing data: keep old values for fields we couldn't scrape
-    pos_file = DATA_DIR / 'position.json'
+    pos_file = DATA_DIR / "position.json"
     if pos_file.exists():
         try:
-            old = json.loads(pos_file.read_text())
-            for key in ('latitude', 'longitude', 'speed', 'course', 'status',
-                        'departure_port', 'atd', 'destination_port', 'eta'):
+            old = json.loads(pos_file.read_text(encoding="utf-8"))
+            for key in MERGE_KEYS:
                 if new_data.get(key) is None and old.get(key) is not None:
                     new_data[key] = old[key]
         except Exception:
             pass
 
-    pos_file.write_text(json.dumps(new_data, indent=2, ensure_ascii=False))
-    print('position.json written.')
+    pos_file.write_text(
+        json.dumps(new_data, indent=2, ensure_ascii=False), encoding="utf-8"
+    )
+    print("position.json written.")
 
     update_history(new_data)
-    print('Done.')
+    print("Done.")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
