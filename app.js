@@ -1,6 +1,14 @@
 'use strict';
 
-let map, shipMarker, shipIconEl, pendingMapUpdate;
+let map, shipMarker, shipIconEl, pendingMapUpdate, activeMapStyle;
+
+const DAY_STYLE   = 'https://tiles.openfreemap.org/styles/bright';
+const NIGHT_STYLE = 'https://tiles.openfreemap.org/styles/dark';
+
+function getMapStyle() {
+  const h = new Date().getHours();
+  return (h >= 6 && h < 22) ? DAY_STYLE : NIGHT_STYLE;
+}
 
 // Cache-bust: neue Minute → neue Datei-Version
 function bust() {
@@ -34,16 +42,28 @@ function fmtDate(iso) {
   } catch { return iso; }
 }
 
-// ── Datumsparser für "05/26/2026, 03:59 PM" ─────────────────────────────────
+// ── Datumsparser: "05/26/2026, 03:59 PM" oder "26.05.2026, 15:59" ──────────
 function parsePosDate(s) {
   if (!s) return null;
-  const m = s.match(/(\d{2})\/(\d{2})\/(\d{4}),\s*(\d{1,2}):(\d{2})\s*(AM|PM)/i);
-  if (!m) return null;
-  let [, mo, dd, yyyy, hh, min, ap] = m;
-  hh = parseInt(hh);
-  if (ap.toUpperCase() === 'PM' && hh !== 12) hh += 12;
-  if (ap.toUpperCase() === 'AM' && hh === 12) hh = 0;
-  return new Date(Date.UTC(+yyyy, +mo - 1, +dd, hh, +min));
+
+  // Format: MM/DD/YYYY, HH:MM AM/PM
+  const mUS = s.match(/(\d{2})\/(\d{2})\/(\d{4}),\s*(\d{1,2}):(\d{2})\s*(AM|PM)/i);
+  if (mUS) {
+    let [, mo, dd, yyyy, hh, min, ap] = mUS;
+    hh = parseInt(hh);
+    if (ap.toUpperCase() === 'PM' && hh !== 12) hh += 12;
+    if (ap.toUpperCase() === 'AM' && hh === 12) hh = 0;
+    return new Date(Date.UTC(+yyyy, +mo - 1, +dd, hh, +min));
+  }
+
+  // Format: DD.MM.YYYY, HH:MM (24h)
+  const mDE = s.match(/(\d{2})\.(\d{2})\.(\d{4}),\s*(\d{1,2}):(\d{2})/);
+  if (mDE) {
+    const [, dd, mo, yyyy, hh, min] = mDE;
+    return new Date(Date.UTC(+yyyy, +mo - 1, +dd, +hh, +min));
+  }
+
+  return null;
 }
 
 // ── Reise-Fortschrittsbalken ─────────────────────────────────────────────────
@@ -82,13 +102,27 @@ function updateVoyageBar(pos) {
 
 // ── Karte initialisieren ─────────────────────────────────────────────────────
 function initMap() {
+  activeMapStyle = getMapStyle();
   map = new maplibregl.Map({
     container: 'map',
-    style: 'https://tiles.openfreemap.org/styles/bright',
+    style: activeMapStyle,
     center: [25, 71],   // [lng, lat]
     zoom: 4,
+    attributionControl: false,
   });
+  map.addControl(new maplibregl.AttributionControl({ compact: true }), 'bottom-right');
+  const _missingImgCanvas = document.createElement('canvas');
+  _missingImgCanvas.width = _missingImgCanvas.height = 11;
+  const _missingImgCtx = _missingImgCanvas.getContext('2d');
+  _missingImgCtx.beginPath();
+  _missingImgCtx.arc(5.5, 5.5, 4.5, 0, Math.PI * 2);
+  _missingImgCtx.fillStyle = '#888';
+  _missingImgCtx.fill();
+  const _missingImgData = _missingImgCtx.getImageData(0, 0, 11, 11);
+  map.on('styleimagemissing', (e) => { if (!map.hasImage(e.id)) map.addImage(e.id, _missingImgData); });
   map.once('load', () => {
+    document.querySelector('.maplibregl-ctrl-attrib')
+      ?.classList.remove('maplibregl-compact-show');
     if (pendingMapUpdate) { pendingMapUpdate(); pendingMapUpdate = null; }
   });
 }
@@ -102,7 +136,6 @@ function updateMap(pos, history) {
   document.getElementById('no-data-overlay').classList.add('hidden');
 
   const lngLat = [pos.longitude, pos.latitude];  // MapLibre: [lng, lat]
-
   const apply = () => {
     // Historische Route
     const cutoff = Date.now() - 8 * 24 * 60 * 60 * 1000;
@@ -220,7 +253,8 @@ function updateWeather(w) {
 // ── Daten laden und anzeigen ─────────────────────────────────────────────────
 async function loadData() {
   const btn = document.getElementById('refresh-btn');
-  if (btn) btn.textContent = '⟳ Lädt…';
+  if (btn?.disabled) return;
+  if (btn) { btn.disabled = true; btn.textContent = '⟳ Lädt…'; }
 
   try {
     const [pos, history, cfg, weather] = await Promise.all([
@@ -244,7 +278,9 @@ async function loadData() {
         ? `Aktualisiert: ${fmtDate(pos.last_updated)}`
         : 'Noch keine Positionsdaten';
 
-    const sailing = cfg.marco_sailing === true;
+    const today = new Date().toISOString().slice(0, 10);
+    const sailing = cfg.next_trip_start && cfg.next_trip_end
+      && today >= cfg.next_trip_start && today <= cfg.next_trip_end;
     document.getElementById('marco-sailing').classList.toggle('hidden', !sailing);
     document.getElementById('marco-shore').classList.toggle('hidden', sailing);
 
@@ -257,7 +293,7 @@ async function loadData() {
     document.getElementById('last-updated').textContent =
       'Fehler beim Laden – Konsole prüfen';
   } finally {
-    if (btn) btn.textContent = '↻ Aktualisieren';
+    if (btn) { btn.disabled = false; btn.textContent = '↻ Aktualisieren'; }
   }
 }
 
@@ -281,22 +317,9 @@ async function loadRssFeed() {
 
   try {
     const box = document.getElementById('rss-box');
-    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(FEED_URL)}`;
-    const res = await fetch(proxyUrl);
+    const res = await fetch(`https://corsproxy.io/?${encodeURIComponent(FEED_URL)}`);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
-    if (!data.contents) throw new Error('Kein Inhalt vom Proxy');
-    if (data.status?.http_code && data.status.http_code >= 400) {
-      throw new Error(`Ursprungsserver: HTTP ${data.status.http_code}`);
-    }
-
-    // allorigins liefert manchmal Base64-Data-URIs
-    let xml = data.contents;
-    const b64match = xml.match(/^data:[^,]+;base64,(.+)$/s);
-    if (b64match) {
-      const bytes = Uint8Array.from(atob(b64match[1]), c => c.charCodeAt(0));
-      xml = new TextDecoder('utf-8').decode(bytes);
-    }
+    const xml = await res.text();
 
     const doc = new DOMParser().parseFromString(xml, 'text/xml');
     const item = doc.querySelector('item');
@@ -330,6 +353,9 @@ loadData();
 loadRssFeed();
 
 document.getElementById('refresh-btn').addEventListener('click', () => { loadData(); loadRssFeed(); });
+document.getElementById('locate-btn').addEventListener('click', () => {
+  if (shipMarker) map.flyTo({ center: shipMarker.getLngLat(), zoom: 8 });
+});
 document.getElementById('burger-btn').addEventListener('click', toggleSidebar);
 document.getElementById('sidebar-overlay').addEventListener('click', toggleSidebar);
 document.getElementById('sidebar-close').addEventListener('click', toggleSidebar);
@@ -337,5 +363,15 @@ document.querySelectorAll('.tab-btn[data-tab]').forEach(btn => {
   btn.addEventListener('click', () => switchTab(btn.dataset.tab));
 });
 
-// Automatisch jede Stunde neu laden
-setInterval(() => { loadData(); loadRssFeed(); }, 60 * 60 * 1000);
+// Automatisch jede Stunde neu laden — ggf. Map-Style wechseln
+setInterval(() => {
+  const newStyle = getMapStyle();
+  if (newStyle !== activeMapStyle) {
+    activeMapStyle = newStyle;
+    map.setStyle(newStyle);
+    map.once('styledata', loadData);
+  } else {
+    loadData();
+  }
+  loadRssFeed();
+}, 60 * 60 * 1000);

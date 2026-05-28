@@ -300,6 +300,33 @@ h1 {
   font-weight: 500;
 }
 
+/* ── Locate Button ─────────────────────────── */
+#locate-btn {
+  position: absolute;
+  bottom: 36px;
+  left: 20px;
+  z-index: 500;
+  width: 48px;
+  height: 48px;
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 50%;
+  color: #e2e8f0;
+  font-size: 1.3rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+  transition: color 0.15s, border-color 0.15s;
+}
+
+#locate-btn:hover {
+  color: #38bdf8;
+  border-color: #38bdf8;
+}
+
 /* ── Map ───────────────────────────────────── */
 #map-container {
   flex: 1;
@@ -460,7 +487,7 @@ h1 {
 #burger-btn {
   display: none;
   position: fixed;
-  bottom: 20px;
+  bottom: 36px;
   right: 20px;
   z-index: 1001;
   background: #0f172a;
