@@ -1,15 +1,15 @@
 {
   "vessel": "Roald Amundsen",
   "mmsi": "211215170",
-  "latitude": 56.74,
-  "longitude": 12.04,
-  "speed": 5.5,
-  "course": 302.0,
+  "latitude": 56.8,
+  "longitude": 11.83,
+  "speed": 5.1,
+  "course": 293.0,
   "status": "In Fahrt",
   "departure_port": "KIEL",
   "atd": "26.05.2026, 17:59",
   "destination_port": "GOTEBORG",
   "eta": "30.05.2026, 14:00",
-  "route_progress": 79.3,
-  "last_updated": "2026-05-29T16:10:04.115193+00:00"
+  "route_progress": 82.3,
+  "last_updated": "2026-05-29T17:10:03.841156+00:00"
 }
