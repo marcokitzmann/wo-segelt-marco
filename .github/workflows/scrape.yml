@@ -1,9 +1,8 @@
-name: Schiffsposition aktualisieren
+name: Schiffsposition aktualisieren (manuell)
+# Automatisches Scraping laeuft als Cronjob auf dem Raspberry Pi.
+# Dieser Workflow kann manuell als Fallback ausgefuehrt werden.
 
 on:
-  schedule:
-    # Jede Stunde, 10 Minuten nach der vollen Stunde
-    - cron: '10 * * * *'
   workflow_dispatch:
     inputs:
       debug:
