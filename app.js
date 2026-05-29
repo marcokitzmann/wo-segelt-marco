@@ -75,16 +75,15 @@ function updateVoyageBar(pos) {
   }
 
   let pct = null;
-  if (pos.route_progress != null) {
-    // Direkt gescrapter Wert von der Quelle (bereits 0–100)
+
+  // Zeitbasierte Berechnung via ATD → ETA (zuverlässiger als gescrapte Werte)
+  const atd = parsePosDate(pos.atd);
+  const eta = parsePosDate(pos.eta);
+  if (atd && eta && eta > atd) {
+    pct = Math.min(100, Math.max(0, (Date.now() - atd) / (eta - atd) * 100));
+  } else if (pos.route_progress != null) {
+    // Fallback: gescrapter Wert, falls Zeitdaten fehlen
     pct = pos.route_progress;
-  } else {
-    // Fallback: zeitbasierte Schätzung via ATD → ETA
-    const atd = parsePosDate(pos.atd);
-    const eta = parsePosDate(pos.eta);
-    if (atd && eta && eta > atd) {
-      pct = Math.min(100, Math.max(0, (Date.now() - atd) / (eta - atd) * 100));
-    }
   }
 
   if (pct == null) {
@@ -175,19 +174,25 @@ function updateMap(pos, history) {
 
     if (shipMarker) {
       shipMarker.setLngLat(lngLat);
-      if (shipIconEl) shipIconEl.style.transform = `rotate(${pos.course ?? 0}deg)`;
+      if (shipIconEl) shipIconEl.parentElement.style.transform = `rotate(${pos.course ?? 0}deg)`;
       shipMarker.getPopup().setHTML(popupHtml);
     } else {
       const el = document.createElement('div');
       el.className = 'ship-marker-wrapper';
       const pulse = document.createElement('div');
       pulse.className = 'ship-pulse';
+      const rotator = document.createElement('div');
+      rotator.className = 'ship-rotator';
+      rotator.style.transform = `rotate(${pos.course ?? 0}deg)`;
+      const courseLine = document.createElement('div');
+      courseLine.className = 'ship-course-line';
       shipIconEl = document.createElement('span');
       shipIconEl.className = 'ship-marker';
-      shipIconEl.style.transform = `rotate(${pos.course ?? 0}deg)`;
       shipIconEl.textContent = '▲';
+      rotator.appendChild(courseLine);
+      rotator.appendChild(shipIconEl);
       el.appendChild(pulse);
-      el.appendChild(shipIconEl);
+      el.appendChild(rotator);
 
       const popup = new maplibregl.Popup({ offset: 16 }).setHTML(popupHtml);
       shipMarker = new maplibregl.Marker({ element: el })
@@ -353,6 +358,22 @@ loadData();
 loadRssFeed();
 
 document.getElementById('refresh-btn').addEventListener('click', () => { loadData(); loadRssFeed(); });
+
+const infoBtn   = document.getElementById('info-btn');
+const infoPopup = document.getElementById('info-popup');
+
+infoBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  const open = infoPopup.classList.toggle('hidden') === false;
+  infoBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+});
+
+document.addEventListener('click', (e) => {
+  if (!infoPopup.classList.contains('hidden') && !infoPopup.contains(e.target)) {
+    infoPopup.classList.add('hidden');
+    infoBtn.setAttribute('aria-expanded', 'false');
+  }
+});
 document.getElementById('locate-btn').addEventListener('click', () => {
   if (shipMarker) map.flyTo({ center: shipMarker.getLngLat(), zoom: 8 });
 });
