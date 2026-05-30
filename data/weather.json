@@ -2,16 +2,16 @@
   "lat": 57.7,
   "lon": 11.92,
   "timezone": "Europe/Stockholm",
-  "temp": 16.74,
-  "feels_like": 16.3,
-  "clouds": 12,
+  "temp": 15.83,
+  "feels_like": 15.48,
+  "clouds": 11,
   "visibility": 10000,
-  "wind_speed": 2.68,
-  "wind_gust": 7.6,
-  "wind_deg": 229,
+  "wind_speed": 4.02,
+  "wind_gust": 6.71,
+  "wind_deg": 204,
   "wind_dir": "SW",
   "rain_1h": null,
   "description": "Ein paar Wolken",
   "icon": "02d",
-  "last_updated": "2026-05-30T16:11:49.702783+00:00"
+  "last_updated": "2026-05-30T17:11:54.890243+00:00"
 }
