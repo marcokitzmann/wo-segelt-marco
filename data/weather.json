@@ -1,17 +1,17 @@
 {
-  "lat": 57.32,
-  "lon": 11.53,
+  "lat": 57.41,
+  "lon": 11.48,
   "timezone": "Europe/Copenhagen",
-  "temp": 10.95,
-  "feels_like": 10.4,
-  "clouds": 98,
+  "temp": 10.72,
+  "feels_like": 10.15,
+  "clouds": 95,
   "visibility": 10000,
-  "wind_speed": 9.03,
-  "wind_gust": 13.25,
-  "wind_deg": 258,
+  "wind_speed": 9.79,
+  "wind_gust": 13.77,
+  "wind_deg": 257,
   "wind_dir": "W",
   "rain_1h": null,
   "description": "Bedeckt",
   "icon": "04n",
-  "last_updated": "2026-05-29T23:11:22.324786+00:00"
+  "last_updated": "2026-05-30T00:11:28.498146+00:00"
 }
