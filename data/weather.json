@@ -2,16 +2,16 @@
   "lat": 57.7,
   "lon": 11.92,
   "timezone": "Europe/Stockholm",
-  "temp": 12.7,
-  "feels_like": 11.49,
+  "temp": 13.75,
+  "feels_like": 12.69,
   "clouds": 2,
   "visibility": 10000,
-  "wind_speed": 1.79,
-  "wind_gust": 3.58,
-  "wind_deg": 196,
-  "wind_dir": "S",
+  "wind_speed": 1.46,
+  "wind_gust": 1.95,
+  "wind_deg": 99,
+  "wind_dir": "O",
   "rain_1h": null,
   "description": "Klarer Himmel",
   "icon": "01d",
-  "last_updated": "2026-05-31T05:11:36.295004+00:00"
+  "last_updated": "2026-05-31T06:12:01.953780+00:00"
 }
