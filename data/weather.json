@@ -2,16 +2,16 @@
   "lat": 57.7,
   "lon": 11.92,
   "timezone": "Europe/Stockholm",
-  "temp": 17.14,
-  "feels_like": 16.74,
-  "clouds": 70,
+  "temp": 16.64,
+  "feels_like": 16.21,
+  "clouds": 77,
   "visibility": 10000,
-  "wind_speed": 3.58,
-  "wind_gust": 4.92,
-  "wind_deg": 215,
+  "wind_speed": 2.68,
+  "wind_gust": 4.02,
+  "wind_deg": 204,
   "wind_dir": "SW",
   "rain_1h": null,
   "description": "Überwiegend bewölkt",
   "icon": "04d",
-  "last_updated": "2026-05-31T15:11:50.091403+00:00"
+  "last_updated": "2026-05-31T16:11:48.876939+00:00"
 }
