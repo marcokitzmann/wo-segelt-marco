@@ -7,9 +7,9 @@
   "course": 358.0,
   "status": "Stationär",
   "departure_port": "KIEL",
-  "atd": "26.05.2026, 17:59",
+  "atd": "26.05.2026, 15:59",
   "destination_port": "GOTEBORG",
-  "eta": "30.05.2026, 13:27",
+  "eta": "30.05.2026, 11:27",
   "route_progress": 100.0,
-  "last_updated": "2026-06-01T04:10:03.498680+00:00"
+  "last_updated": "2026-06-01T07:56:23.162118+00:00"
 }
