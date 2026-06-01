@@ -2,16 +2,16 @@
   "lat": 57.7,
   "lon": 11.92,
   "timezone": "Europe/Stockholm",
-  "temp": 13.02,
-  "feels_like": 11.79,
+  "temp": 12.66,
+  "feels_like": 11.44,
   "clouds": 100,
   "visibility": 10000,
-  "wind_speed": 0.98,
-  "wind_gust": 0.78,
-  "wind_deg": 132,
-  "wind_dir": "SO",
+  "wind_speed": 1.27,
+  "wind_gust": 1.2,
+  "wind_deg": 182,
+  "wind_dir": "S",
   "rain_1h": null,
   "description": "Bedeckt",
   "icon": "04n",
-  "last_updated": "2026-05-31T23:11:53.480857+00:00"
+  "last_updated": "2026-06-01T00:11:36.602092+00:00"
 }
