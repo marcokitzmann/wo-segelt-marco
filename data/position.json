@@ -3,13 +3,13 @@
   "mmsi": "211215170",
   "latitude": 54.71,
   "longitude": 10.1,
-  "speed": 0.1,
-  "course": 190.0,
+  "speed": 2.7,
+  "course": 340.0,
   "status": "In Fahrt",
   "departure_port": "GOTEBORG",
   "atd": "01.06.2026, 16:26",
   "destination_port": "KIEL",
   "eta": "07.06.2026, 10:00",
   "route_progress": 100.0,
-  "last_updated": "2026-06-05T01:39:26.704492+00:00"
+  "last_updated": "2026-06-05T06:51:10.131615+00:00"
 }
