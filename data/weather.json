@@ -1,17 +1,17 @@
 {
-  "lat": 54.65,
-  "lon": 10.22,
+  "lat": 54.52,
+  "lon": 10.28,
   "timezone": "Europe/Berlin",
-  "temp": 17.26,
-  "feels_like": 16.82,
-  "clouds": 56,
+  "temp": 16.73,
+  "feels_like": 16.36,
+  "clouds": 85,
   "visibility": 10000,
-  "wind_speed": 7.8,
-  "wind_gust": 9.84,
-  "wind_deg": 267,
+  "wind_speed": 5.46,
+  "wind_gust": 7.03,
+  "wind_deg": 279,
   "wind_dir": "W",
   "rain_1h": null,
-  "description": "Überwiegend bewölkt",
+  "description": "Bedeckt",
   "icon": "04d",
-  "last_updated": "2026-06-05T14:09:15.747637+00:00"
+  "last_updated": "2026-06-05T17:01:51.000473+00:00"
 }
