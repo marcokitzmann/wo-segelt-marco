@@ -4,12 +4,12 @@
   "latitude": 54.32,
   "longitude": 10.14,
   "speed": 0.0,
-  "course": 354.0,
+  "course": 31.0,
   "status": "Stationär",
   "departure_port": "GOTEBORG",
   "atd": "01.06.2026, 16:26",
   "destination_port": "KIEL",
   "eta": "06.06.2026, 06:57",
   "route_progress": 100.0,
-  "last_updated": "2026-06-06T11:58:31.658773+00:00"
+  "last_updated": "2026-06-06T14:18:28.443155+00:00"
 }
