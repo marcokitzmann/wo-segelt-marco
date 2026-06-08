@@ -11,9 +11,11 @@ LOG_PREFIX="[$(date -u '+%Y-%m-%dT%H:%MZ')]"
 
 echo "$LOG_PREFIX === Scraper-Lauf gestartet ==="
 
-# Aktuellen Stand holen
+# Remote-Stand holen und lokalen Branch rebasen (verhindert Merge-Commits
+# und klappt auch wenn Remote neue Commits hat, die lokal fehlen)
 cd "$REPO_DIR"
-git pull --ff-only
+git fetch origin
+git rebase origin/main
 
 # Python-Umgebung aktivieren falls vorhanden
 if [ -f "$REPO_DIR/.venv/bin/activate" ]; then
@@ -38,7 +40,24 @@ if git diff --staged --quiet; then
     echo "$LOG_PREFIX Keine Aenderungen – nichts zu committen."
 else
     git commit -m "data: Schiffsposition + Wetter $(date -u '+%Y-%m-%dT%H:%MZ')"
-    git push origin main
+
+    # Robuster Push: bei Ablehnung Remote-Commits rebasen und erneut versuchen
+    push_ok=false
+    for attempt in 1 2 3; do
+        if git push origin main; then
+            push_ok=true
+            break
+        fi
+        echo "$LOG_PREFIX Push fehlgeschlagen (Versuch $attempt/3) – hole Remote-Aenderungen..."
+        git fetch origin
+        git rebase origin/main
+    done
+
+    if [ "$push_ok" = false ]; then
+        echo "$LOG_PREFIX FEHLER: Push nach 3 Versuchen nicht erfolgreich." >&2
+        exit 1
+    fi
+
     echo "$LOG_PREFIX Daten gepusht."
 fi
 

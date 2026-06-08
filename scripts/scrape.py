@@ -14,7 +14,9 @@ import json
 import os
 import re
 import sys
+import time
 from datetime import datetime, timezone
+from math import asin, cos, radians, sin, sqrt
 from pathlib import Path
 
 try:
@@ -27,7 +29,8 @@ import requests
 
 URL = "https://marinetraffic.live/vessels/roald-amundsen-position/211215170/"
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
-MAX_HISTORY = 720  # ~30 days at 1 h interval
+MAX_HISTORY = 720   # ~30 days at 1 h interval
+RETRY_DELAYS = (5 * 60, 10 * 60)  # seconds between scrape retries on bad position
 DEBUG = os.getenv("SCRAPE_DEBUG", "").lower() in ("1", "true", "yes")
 
 MERGE_KEYS = (
@@ -38,12 +41,69 @@ MERGE_KEYS = (
 
 # ── Coordinate parsing ────────────────────────────────────────────────────────
 
-def _check(val: float, kind: str) -> float | None:
+def _check(val: float | None, kind: str) -> float | None:
+    if val is None:
+        return None
     if kind == "lat" and -90 <= val <= 90:
         return round(val, 6)
     if kind == "lon" and -180 <= val <= 180:
         return round(val, 6)
     return None
+
+
+# ── Position plausibility check ───────────────────────────────────────────────
+
+# Roald Amundsen: max. ~16 kn; threshold with ~1.5× safety margin
+_MAX_PLAUSIBLE_SPEED_KN = 25.0
+
+
+def _haversine_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
+    """Great-circle distance in kilometres between two WGS-84 coordinates."""
+    R = 6371.0
+    dlat = radians(lat2 - lat1)
+    dlon = radians(lon2 - lon1)
+    a = sin(dlat / 2) ** 2 + cos(radians(lat1)) * cos(radians(lat2)) * sin(dlon / 2) ** 2
+    return 2 * R * asin(sqrt(max(0.0, a)))
+
+
+def is_position_plausible(lat: float, lon: float, last_entry: dict) -> bool:
+    """
+    Returns False when the distance to the last known position would require
+    an implausible speed (> _MAX_PLAUSIBLE_SPEED_KN knots).
+    Always returns True when there is no previous reference point.
+    """
+    if not last_entry:
+        return True
+
+    last_lat = last_entry.get("lat")
+    last_lon = last_entry.get("lon")
+    if last_lat is None or last_lon is None:
+        return True
+
+    dist_km = _haversine_km(last_lat, last_lon, lat, lon)
+
+    hours_elapsed = 2.0  # conservative default
+    last_ts = last_entry.get("ts")
+    if last_ts:
+        try:
+            last_dt = datetime.fromisoformat(last_ts.replace("Z", "+00:00"))
+            delta_h = (datetime.now(timezone.utc) - last_dt).total_seconds() / 3600
+            hours_elapsed = max(0.25, delta_h)
+        except Exception:
+            pass
+
+    implied_kn = (dist_km / 1.852) / hours_elapsed
+    if implied_kn > _MAX_PLAUSIBLE_SPEED_KN:
+        print(
+            f"WARNING: Unplausible position ({lat}, {lon}) – "
+            f"{dist_km:.1f} km in {hours_elapsed:.1f} h "
+            f"= {implied_kn:.1f} kn implied (max {_MAX_PLAUSIBLE_SPEED_KN} kn). "
+            f"Last known: ({last_lat}, {last_lon}). Position rejected.",
+            file=sys.stderr,
+        )
+        return False
+
+    return True
 
 
 def parse_coord(raw: str, kind: str) -> float | None:
@@ -184,21 +244,24 @@ def regex_extract(data: dict, text: str) -> None:
 
 # ── JSON-LD / embedded JSON helper ───────────────────────────────────────────
 
+def _to_float(v) -> float | None:
+    """Convert int, float, or numeric string to float; return None otherwise."""
+    if isinstance(v, (int, float)):
+        return float(v)
+    if isinstance(v, str) and re.fullmatch(r"-?\d+\.?\d*", v.strip()):
+        return float(v)
+    return None
+
+
 def _from_jsonld(data: dict, obj) -> None:
     """Recursively look for lat/lon/speed keys in a parsed JSON object."""
     if isinstance(obj, dict):
         for k, v in obj.items():
             kl = k.lower()
             if "latitude" in kl:
-                num = float(v) if isinstance(v, (int, float)) else (
-                    float(v) if isinstance(v, str) and re.fullmatch(r"-?\d+\.?\d*", v.strip()) else None
-                )
-                _set_if_none(data, "latitude",  _check(num, "lat") if num is not None else None)
+                _set_if_none(data, "latitude", _check(_to_float(v), "lat"))
             elif "longitude" in kl:
-                num = float(v) if isinstance(v, (int, float)) else (
-                    float(v) if isinstance(v, str) and re.fullmatch(r"-?\d+\.?\d*", v.strip()) else None
-                )
-                _set_if_none(data, "longitude", _check(num, "lon") if num is not None else None)
+                _set_if_none(data, "longitude", _check(_to_float(v), "lon"))
             elif "speed" in kl and isinstance(v, (int, float)):
                 _set_if_none(data, "speed", float(v))
             else:
@@ -244,7 +307,7 @@ async def scrape_voyage_section(page, data: dict) -> None:
 async def scrape() -> dict:
     from playwright.async_api import async_playwright
 
-    base: dict = {
+    data: dict = {
         "vessel":           "Roald Amundsen",
         "mmsi":             "211215170",
         "latitude":         None,
@@ -281,7 +344,7 @@ async def scrape() -> dict:
         except Exception as exc:
             print(f"Navigation error: {exc}", file=sys.stderr)
             await browser.close()
-            return base
+            return data
 
         try:
             await page.wait_for_selector(
@@ -296,8 +359,6 @@ async def scrape() -> dict:
             print("── page text (first 3000 chars) ──")
             print(body_text[:3000])
             print("──────────────────────────────────")
-
-        data = dict(base)
 
         # Strategy 0: marinetraffic.live ship-details grid (.detail-label / .detail-value)
         for item in await page.query_selector_all(".ship-details-grid .detail-item"):
@@ -473,17 +534,63 @@ def fetch_weather(lat: float, lon: float) -> dict | None:
 def main() -> None:
     DATA_DIR.mkdir(parents=True, exist_ok=True)
 
-    new_data = asyncio.run(scrape())
+    # ── Load last history entry as plausibility reference ────────────────────
+    history_path = DATA_DIR / "history.json"
+    last_history_entry: dict = {}
+    if history_path.exists():
+        try:
+            hist = json.loads(history_path.read_text(encoding="utf-8"))
+            if isinstance(hist, list) and hist:
+                last_history_entry = hist[-1]
+        except Exception:
+            pass
 
+    # ── Scrape with up to 2 retries when position is missing or implausible ──
+    new_data: dict = {}
+    position_accepted = False
+
+    for attempt in range(len(RETRY_DELAYS) + 1):
+        if attempt > 0:
+            delay = RETRY_DELAYS[attempt - 1]
+            print(
+                f"Implausible position – waiting {delay // 60} min before retry "
+                f"{attempt}/{len(RETRY_DELAYS)} …",
+                file=sys.stderr,
+            )
+            time.sleep(delay)
+
+        new_data = asyncio.run(scrape())
+
+        new_lat = new_data.get("latitude")
+        new_lon = new_data.get("longitude")
+
+        if new_lat is not None and new_lon is not None and \
+                is_position_plausible(new_lat, new_lon, last_history_entry):
+            position_accepted = True
+            break
+
+    if not position_accepted and new_data.get("latitude") is not None:
+        print(
+            "Implausible coordinates dropped after all retries – "
+            "keeping last known position.",
+            file=sys.stderr,
+        )
+        new_data["latitude"] = None
+        new_data["longitude"] = None
+
+    # ── Load existing position.json for merge ────────────────────────────────
     pos_file = DATA_DIR / "position.json"
+    old: dict = {}
     if pos_file.exists():
         try:
             old = json.loads(pos_file.read_text(encoding="utf-8"))
-            for key in MERGE_KEYS:
-                if new_data.get(key) is None and old.get(key) is not None:
-                    new_data[key] = old[key]
         except Exception:
             pass
+
+    # ── Merge missing fields from previous position.json ─────────────────────
+    for key in MERGE_KEYS:
+        if new_data.get(key) is None and old.get(key) is not None:
+            new_data[key] = old[key]
 
     pos_file.write_text(
         json.dumps(new_data, indent=2, ensure_ascii=False), encoding="utf-8"
