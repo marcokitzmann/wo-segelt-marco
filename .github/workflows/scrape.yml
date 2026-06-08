@@ -9,8 +9,8 @@ on:
         description: 'Debug-Ausgabe aktivieren'
         type: boolean
         default: false
-  schedule:
-    - cron: '35 * * * *'
+  # schedule:
+  #   - cron: '35 * * * *'
 
 permissions:
   contents: write
