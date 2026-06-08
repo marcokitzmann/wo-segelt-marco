@@ -11,11 +11,17 @@ LOG_PREFIX="[$(date -u '+%Y-%m-%dT%H:%MZ')]"
 
 echo "$LOG_PREFIX === Scraper-Lauf gestartet ==="
 
-# Remote-Stand holen und lokalen Branch rebasen (verhindert Merge-Commits
-# und klappt auch wenn Remote neue Commits hat, die lokal fehlen)
+# Remote-Stand holen und lokalen Branch synchronisieren.
+# Bei Rebase-Konflikten (z.B. nach manuellem Eingriff im Remote) wird der
+# lokale Branch hart auf den Remote-Stand zurueckgesetzt – die Daten werden
+# vom Scraper ohnehin neu generiert.
 cd "$REPO_DIR"
 git fetch origin
-git rebase origin/main
+if ! git rebase origin/main; then
+    git rebase --abort 2>/dev/null || true
+    echo "$LOG_PREFIX Rebase fehlgeschlagen – setze lokalen Stand auf origin/main zurueck." >&2
+    git reset --hard origin/main
+fi
 
 # Python-Umgebung aktivieren falls vorhanden
 if [ -f "$REPO_DIR/.venv/bin/activate" ]; then
@@ -48,9 +54,12 @@ else
             push_ok=true
             break
         fi
-        echo "$LOG_PREFIX Push fehlgeschlagen (Versuch $attempt/3) – hole Remote-Aenderungen..."
+        echo "$LOG_PREFIX Push fehlgeschlagen (Versuch $attempt/3) – hole Remote-Aenderungen..." >&2
         git fetch origin
-        git rebase origin/main
+        if ! git rebase origin/main; then
+            git rebase --abort 2>/dev/null || true
+            git reset --hard origin/main
+        fi
     done
 
     if [ "$push_ok" = false ]; then
