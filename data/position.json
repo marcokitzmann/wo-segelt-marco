@@ -4,12 +4,12 @@
   "latitude": 54.32,
   "longitude": 10.14,
   "speed": 0.0,
-  "course": 32.0,
+  "course": 31.0,
   "status": "Stationär",
   "departure_port": "GOTEBORG",
   "atd": "01.06.2026, 18:26",
   "destination_port": "WISMAR",
   "eta": "06.06.2026, 08:57",
   "route_progress": 100.0,
-  "last_updated": "2026-06-09T01:10:03.579942+00:00"
+  "last_updated": "2026-06-09T02:10:03.432880+00:00"
 }
