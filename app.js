@@ -1,6 +1,6 @@
 'use strict';
 
-let map, shipMarker, shipIconEl, pendingMapUpdate, activeMapStyle;
+let map, shipMarker, shipIconEl, shipCourseLineEl, pendingMapUpdate, activeMapStyle;
 
 const DAY_STYLE   = 'https://tiles.openfreemap.org/styles/bright';
 const NIGHT_STYLE = 'https://tiles.openfreemap.org/styles/dark';
@@ -99,6 +99,13 @@ function updateVoyageBar(pos) {
   bar.classList.remove('hidden');
 }
 
+// ── Schiffs-Marker-Zustand aktualisieren ─────────────────────────────────────
+function applyMarkerState(course, lineHeight, icon) {
+  shipIconEl.parentElement.style.transform = `rotate(${course ?? 0}deg)`;
+  shipIconEl.textContent = icon;
+  shipCourseLineEl.style.height = `${lineHeight}px`;
+}
+
 // ── Karte initialisieren ─────────────────────────────────────────────────────
 function initMap() {
   activeMapStyle = getMapStyle();
@@ -172,9 +179,13 @@ function updateMap(pos, history) {
       `${fmtCoord(pos.latitude, 'lat')} / ${fmtCoord(pos.longitude, 'lon')}` +
       (navLine ? `<br>${navLine}` : '');
 
+    const speedKn = pos.speed ?? 0;
+    const lineHeight = speedKn > 0 ? Math.round(Math.min(speedKn / 12, 1) * 50) : 0;
+    const markerIcon = speedKn > 0 ? '▲' : '●';
+
     if (shipMarker) {
       shipMarker.setLngLat(lngLat);
-      if (shipIconEl) shipIconEl.parentElement.style.transform = `rotate(${pos.course ?? 0}deg)`;
+      applyMarkerState(pos.course, lineHeight, markerIcon);
       shipMarker.getPopup().setHTML(popupHtml);
     } else {
       const el = document.createElement('div');
@@ -183,16 +194,15 @@ function updateMap(pos, history) {
       pulse.className = 'ship-pulse';
       const rotator = document.createElement('div');
       rotator.className = 'ship-rotator';
-      rotator.style.transform = `rotate(${pos.course ?? 0}deg)`;
-      const courseLine = document.createElement('div');
-      courseLine.className = 'ship-course-line';
+      shipCourseLineEl = document.createElement('div');
+      shipCourseLineEl.className = 'ship-course-line';
       shipIconEl = document.createElement('span');
       shipIconEl.className = 'ship-marker';
-      shipIconEl.textContent = '▲';
-      rotator.appendChild(courseLine);
+      rotator.appendChild(shipCourseLineEl);
       rotator.appendChild(shipIconEl);
       el.appendChild(pulse);
       el.appendChild(rotator);
+      applyMarkerState(pos.course, lineHeight, markerIcon);
 
       const popup = new maplibregl.Popup({ offset: 16 }).setHTML(popupHtml);
       shipMarker = new maplibregl.Marker({ element: el })
@@ -288,6 +298,8 @@ async function loadData() {
       && today >= cfg.next_trip_start && today <= cfg.next_trip_end;
     document.getElementById('marco-sailing').classList.toggle('hidden', !sailing);
     document.getElementById('marco-shore').classList.toggle('hidden', sailing);
+    document.getElementById('sidebar-avatar').src =
+      sailing ? 'images/bobblehead-marco.jpg' : 'images/bobblehead-home.jpg';
 
     updateVoyageBar(pos);
     updateMap(pos, history);
