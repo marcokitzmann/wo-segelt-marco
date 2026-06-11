@@ -4,14 +4,14 @@
   "timezone": "Europe/Berlin",
   "temp": 10.07,
   "feels_like": 9.64,
-  "clouds": 100,
+  "clouds": 98,
   "visibility": 10000,
-  "wind_speed": 0.22,
-  "wind_gust": 0.36,
-  "wind_deg": 10,
-  "wind_dir": "N",
+  "wind_speed": 2.72,
+  "wind_gust": 2.64,
+  "wind_deg": 251,
+  "wind_dir": "W",
   "rain_1h": null,
   "description": "Bedeckt",
   "icon": "04n",
-  "last_updated": "2026-06-10T23:11:45.303319+00:00"
+  "last_updated": "2026-06-11T00:11:43.094290+00:00"
 }
