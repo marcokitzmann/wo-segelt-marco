@@ -1,15 +1,15 @@
 {
   "vessel": "Roald Amundsen",
   "mmsi": "211215170",
-  "latitude": 54.19,
+  "latitude": 54.18,
   "longitude": 11.54,
-  "speed": 2.2,
-  "course": 355.0,
+  "speed": 4.5,
+  "course": 222.0,
   "status": "In Fahrt",
   "departure_port": "KUEHLUNGSB...",
   "atd": "11.06.2026, 08:53",
   "destination_port": "WISMAR",
   "eta": "Invalid Date",
   "route_progress": 50.0,
-  "last_updated": "2026-06-11T11:10:04.279535+00:00"
+  "last_updated": "2026-06-11T12:10:03.749539+00:00"
 }
