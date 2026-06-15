@@ -4,12 +4,12 @@
   "latitude": 53.96,
   "longitude": 11.26,
   "speed": 0.0,
-  "course": 199.0,
+  "course": 0.0,
   "status": "Stationär",
   "departure_port": "WISMAR",
   "atd": "15.06.2026, 13:45",
   "destination_port": "KIEL",
   "eta": "18.06.2026, 18:00",
   "route_progress": 16.3,
-  "last_updated": "2026-06-15T20:10:04.158348+00:00"
+  "last_updated": "2026-06-15T21:10:03.904242+00:00"
 }
