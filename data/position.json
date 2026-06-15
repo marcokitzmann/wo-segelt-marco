@@ -4,12 +4,12 @@
   "latitude": 53.96,
   "longitude": 11.26,
   "speed": 0.0,
-  "course": 6.0,
+  "course": 39.0,
   "status": "Stationär",
   "departure_port": "KUEHLUNGSB...",
   "atd": "11.06.2026, 08:53",
   "destination_port": "WISMAR",
   "eta": "12.06.2026, 09:59",
   "route_progress": 100.0,
-  "last_updated": "2026-06-15T18:10:03.339233+00:00"
+  "last_updated": "2026-06-15T19:10:03.838388+00:00"
 }
