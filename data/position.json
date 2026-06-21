@@ -3,13 +3,13 @@
   "mmsi": "211215170",
   "latitude": 54.32,
   "longitude": 10.14,
-  "speed": 2.2,
-  "course": 30.0,
-  "status": "In Fahrt",
+  "speed": 0.0,
+  "course": 0.0,
+  "status": "Stationär",
   "departure_port": "WISMAR",
   "atd": "15.06.2026, 13:45",
   "destination_port": "KIEL",
   "eta": "18.06.2026, 18:00",
   "route_progress": 16.3,
-  "last_updated": "2026-06-21T15:10:03.302942+00:00"
+  "last_updated": "2026-06-21T16:10:03.856934+00:00"
 }
