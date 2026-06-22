@@ -6,10 +6,10 @@
   "speed": 0.0,
   "course": 312.0,
   "status": "Stationär",
-  "departure_port": "WISMAR",
-  "atd": "15.06.2026, 13:45",
+  "departure_port": "KIEL",
+  "atd": "22.06.2026, 11:07",
   "destination_port": "KIEL",
-  "eta": "18.06.2026, 18:00",
-  "route_progress": 16.3,
-  "last_updated": "2026-06-22T17:10:03.634619+00:00"
+  "eta": "22.06.2026, 14:55",
+  "route_progress": 100.0,
+  "last_updated": "2026-06-22T18:10:03.876769+00:00"
 }
