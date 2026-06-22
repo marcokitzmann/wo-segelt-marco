@@ -2,16 +2,16 @@
   "lat": 54.32,
   "lon": 10.14,
   "timezone": "Europe/Berlin",
-  "temp": 24.6,
-  "feels_like": 24.84,
-  "clouds": 100,
+  "temp": 23.49,
+  "feels_like": 23.7,
+  "clouds": 99,
   "visibility": 10000,
-  "wind_speed": 2.95,
-  "wind_gust": 3.32,
+  "wind_speed": 3.43,
+  "wind_gust": 3.87,
   "wind_deg": 11,
   "wind_dir": "N",
   "rain_1h": null,
   "description": "Bedeckt",
   "icon": "04d",
-  "last_updated": "2026-06-22T16:11:44.479262+00:00"
+  "last_updated": "2026-06-22T17:11:39.588882+00:00"
 }
