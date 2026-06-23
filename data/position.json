@@ -4,12 +4,12 @@
   "latitude": 54.32,
   "longitude": 10.14,
   "speed": 0.0,
-  "course": 0.0,
+  "course": 23.0,
   "status": "Stationär",
   "departure_port": "KIEL",
   "atd": "22.06.2026, 11:07",
   "destination_port": "KIEL",
   "eta": "22.06.2026, 14:55",
   "route_progress": 100.0,
-  "last_updated": "2026-06-23T12:10:03.624722+00:00"
+  "last_updated": "2026-06-23T13:10:03.929994+00:00"
 }
