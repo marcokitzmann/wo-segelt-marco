@@ -3,15 +3,15 @@
   "lon": 10.14,
   "timezone": "Europe/Berlin",
   "temp": 14.05,
-  "feels_like": 13.44,
-  "clouds": 33,
+  "feels_like": 13.21,
+  "clouds": 81,
   "visibility": 10000,
   "wind_speed": 2.16,
-  "wind_gust": 2.23,
-  "wind_deg": 166,
+  "wind_gust": 2.24,
+  "wind_deg": 165,
   "wind_dir": "S",
   "rain_1h": null,
-  "description": "Mäßig bewölkt",
-  "icon": "03n",
-  "last_updated": "2026-06-24T00:11:49.554184+00:00"
+  "description": "Überwiegend bewölkt",
+  "icon": "04n",
+  "last_updated": "2026-06-24T01:11:19.413895+00:00"
 }
