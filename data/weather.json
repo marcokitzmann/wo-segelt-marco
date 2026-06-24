@@ -2,16 +2,16 @@
   "lat": 54.32,
   "lon": 10.14,
   "timezone": "Europe/Berlin",
-  "temp": 28.49,
-  "feels_like": 32.3,
-  "clouds": 8,
+  "temp": 24.2,
+  "feels_like": 24.69,
+  "clouds": 0,
   "visibility": 10000,
-  "wind_speed": 2.85,
-  "wind_gust": 5.24,
-  "wind_deg": 317,
+  "wind_speed": 2.57,
+  "wind_gust": 3.35,
+  "wind_deg": 319,
   "wind_dir": "NW",
   "rain_1h": null,
   "description": "Klarer Himmel",
   "icon": "01d",
-  "last_updated": "2026-06-24T18:11:27.680026+00:00"
+  "last_updated": "2026-06-24T19:16:13.014955+00:00"
 }
