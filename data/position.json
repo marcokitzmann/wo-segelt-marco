@@ -6,10 +6,10 @@
   "speed": 0.0,
   "course": 0.0,
   "status": "Stationär",
-  "departure_port": "N/A",
-  "atd": "N/A",
-  "destination_port": "N/A",
-  "eta": "N/A",
-  "route_progress": 0.0,
-  "last_updated": "2026-06-28T19:27:21.922670+00:00"
+  "departure_port": "KIEL",
+  "atd": "27.06.2026, 11:40",
+  "destination_port": "KIEL",
+  "eta": "27.06.2026, 15:01",
+  "route_progress": 100.0,
+  "last_updated": "2026-06-28T20:27:00.061601+00:00"
 }
