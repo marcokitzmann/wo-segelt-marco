@@ -1,17 +1,17 @@
 {
-  "lat": 54.54,
-  "lon": 10.98,
+  "lat": 54.57,
+  "lon": 11.06,
   "timezone": "Europe/Berlin",
-  "temp": 19.91,
-  "feels_like": 19.94,
+  "temp": 19.81,
+  "feels_like": 19.78,
   "clouds": 100,
   "visibility": 10000,
-  "wind_speed": 3.25,
-  "wind_gust": 3.07,
+  "wind_speed": 2.77,
+  "wind_gust": 2.74,
   "wind_deg": 106,
   "wind_dir": "O",
-  "rain_1h": 0.15,
+  "rain_1h": 0.67,
   "description": "Leichter Regen",
   "icon": "10d",
-  "last_updated": "2026-07-01T09:11:31.877641+00:00"
+  "last_updated": "2026-07-01T10:11:32.874784+00:00"
 }
