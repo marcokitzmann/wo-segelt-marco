@@ -1,15 +1,15 @@
 {
   "vessel": "Roald Amundsen",
   "mmsi": "211215170",
-  "latitude": 54.53,
-  "longitude": 11.29,
-  "speed": 0.2,
-  "course": 263.0,
+  "latitude": 54.54,
+  "longitude": 11.3,
+  "speed": 1.0,
+  "course": 80.0,
   "status": "In Fahrt",
   "departure_port": "KIEL",
   "atd": "29.06.2026, 14:49",
   "destination_port": "SASSNITZ",
   "eta": "Invalid Date",
   "route_progress": 50.0,
-  "last_updated": "2026-07-01T13:15:47.103049+00:00"
+  "last_updated": "2026-07-01T14:15:27.682548+00:00"
 }
