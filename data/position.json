@@ -3,13 +3,13 @@
   "mmsi": "211215170",
   "latitude": 54.53,
   "longitude": 11.36,
-  "speed": 10.0,
-  "course": 10.0,
+  "speed": 4.0,
+  "course": 4.0,
   "status": "🔒",
   "departure_port": "KIEL",
   "atd": "29.06.2026, 14:49",
   "destination_port": "SASSNITZ",
   "eta": "03.07.2026, 01:32",
   "route_progress": 100.0,
-  "last_updated": "2026-07-03T06:27:56.186213+00:00"
+  "last_updated": "2026-07-03T07:28:02.020004+00:00"
 }
