@@ -3,13 +3,13 @@
   "mmsi": "211215170",
   "latitude": 54.51,
   "longitude": 13.65,
-  "speed": 1.7,
+  "speed": 0.0,
   "course": 323.0,
-  "status": "In Fahrt",
-  "departure_port": "NEUSS",
-  "atd": "03.07.2026, 17:12",
-  "destination_port": "MARL",
-  "eta": "04.07.2026, 16:48",
-  "route_progress": 0.0,
-  "last_updated": "2026-07-04T17:27:50.320062+00:00"
+  "status": "Stationär",
+  "departure_port": "KIEL",
+  "atd": "29.06.2026, 14:49",
+  "destination_port": "SASSNITZ",
+  "eta": "04.07.2026, 06:12",
+  "route_progress": 100.0,
+  "last_updated": "2026-07-04T18:10:04.103232+00:00"
 }
