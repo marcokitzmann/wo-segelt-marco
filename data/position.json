@@ -3,13 +3,13 @@
   "mmsi": "211215170",
   "latitude": 54.53,
   "longitude": 11.36,
-  "speed": 107.969,
-  "course": 107.969,
-  "status": "🔒",
+  "speed": 0.0,
+  "course": 0.0,
+  "status": "Stationär",
   "departure_port": "N/A",
   "atd": "N/A",
   "destination_port": "N/A",
   "eta": "N/A",
   "route_progress": 0.0,
-  "last_updated": "2026-07-04T03:27:30.221742+00:00"
+  "last_updated": "2026-07-04T04:27:06.644734+00:00"
 }
