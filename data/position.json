@@ -4,12 +4,12 @@
   "latitude": 54.53,
   "longitude": 11.36,
   "speed": 0.1,
-  "course": 14.0,
+  "course": 42.0,
   "status": "🔒",
   "departure_port": "KIEL",
   "atd": "29.06.2026, 14:49",
   "destination_port": "SASSNITZ",
   "eta": "03.07.2026, 01:32",
   "route_progress": 100.0,
-  "last_updated": "2026-07-04T00:26:34.664437+00:00"
+  "last_updated": "2026-07-04T01:27:30.038864+00:00"
 }
