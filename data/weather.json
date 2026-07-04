@@ -1,17 +1,17 @@
 {
-  "lat": 54.53,
-  "lon": 11.36,
+  "lat": 55,
+  "lon": 13,
   "timezone": "Etc/GMT-1",
-  "temp": 17.71,
-  "feels_like": 17.63,
-  "clouds": 31,
+  "temp": 18.91,
+  "feels_like": 18.68,
+  "clouds": 5,
   "visibility": 10000,
-  "wind_speed": 10.75,
-  "wind_gust": 10.23,
-  "wind_deg": 255,
+  "wind_speed": 7.31,
+  "wind_gust": 9.98,
+  "wind_deg": 253,
   "wind_dir": "W",
   "rain_1h": null,
-  "description": "Mäßig bewölkt",
-  "icon": "03d",
-  "last_updated": "2026-07-04T13:27:36.910358+00:00"
+  "description": "Klarer Himmel",
+  "icon": "01d",
+  "last_updated": "2026-07-04T14:29:19.933562+00:00"
 }
