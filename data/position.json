@@ -3,13 +3,13 @@
   "mmsi": "211215170",
   "latitude": 54.53,
   "longitude": 11.36,
-  "speed": 1.7,
-  "course": 182.0,
+  "speed": 24.2,
+  "course": 44.0,
   "status": "🔒",
   "departure_port": "NEUSS",
   "atd": "03.07.2026, 17:12",
   "destination_port": "MARL",
   "eta": "04.07.2026, 16:48",
   "route_progress": 0.0,
-  "last_updated": "2026-07-04T11:27:43.314112+00:00"
+  "last_updated": "2026-07-04T12:27:19.232296+00:00"
 }
