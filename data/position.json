@@ -7,9 +7,9 @@
   "course": 323.0,
   "status": "Stationär",
   "departure_port": "KIEL",
-  "atd": "29.06.2026, 14:49",
-  "destination_port": "SASSNITZ",
-  "eta": "04.07.2026, 06:12",
-  "route_progress": 100.0,
-  "last_updated": "2026-07-05T06:10:03.836617+00:00"
+  "atd": "04.07.2026, 06:12",
+  "destination_port": "TALLINN OL...",
+  "eta": "13.07.2026, 12:00",
+  "route_progress": 0.0,
+  "last_updated": "2026-07-05T07:10:03.943181+00:00"
 }
