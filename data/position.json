@@ -1,15 +1,15 @@
 {
   "vessel": "Roald Amundsen",
   "mmsi": "211215170",
-  "latitude": 55.0,
-  "longitude": 13.0,
-  "speed": 0.0,
-  "course": 0.0,
-  "status": "Stationär",
-  "departure_port": "N/A",
-  "atd": "N/A",
-  "destination_port": "N/A",
-  "eta": "N/A",
-  "route_progress": 0.0,
-  "last_updated": "2026-07-06T06:27:28.475657+00:00"
+  "latitude": 54.59,
+  "longitude": 13.81,
+  "speed": 5.0,
+  "course": 54.0,
+  "status": "In Fahrt",
+  "departure_port": "SASSNITZ",
+  "atd": "06.07.2026, 06:28",
+  "destination_port": "TALLINN OL...",
+  "eta": "13.07.2026, 11:00",
+  "route_progress": 2.5,
+  "last_updated": "2026-07-06T07:10:03.644962+00:00"
 }
