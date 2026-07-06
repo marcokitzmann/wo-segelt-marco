@@ -2,16 +2,16 @@
   "lat": 55.47,
   "lon": 15.1,
   "timezone": "Europe/Copenhagen",
-  "temp": 14.8,
-  "feels_like": 14.53,
+  "temp": 13.99,
+  "feels_like": 13.79,
   "clouds": 100,
   "visibility": 10000,
-  "wind_speed": 6.32,
-  "wind_gust": 7.73,
-  "wind_deg": 285,
+  "wind_speed": 5.54,
+  "wind_gust": 6.5,
+  "wind_deg": 272,
   "wind_dir": "W",
-  "rain_1h": 1.15,
+  "rain_1h": 2.11,
   "description": "Mäßiger Regen",
   "icon": "10d",
-  "last_updated": "2026-07-06T18:11:18.873257+00:00"
+  "last_updated": "2026-07-06T19:11:15.596931+00:00"
 }
