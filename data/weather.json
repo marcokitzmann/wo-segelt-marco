@@ -3,15 +3,15 @@
   "lon": 14.13,
   "timezone": "Europe/Copenhagen",
   "temp": 16.11,
-  "feels_like": 15.87,
+  "feels_like": 16,
   "clouds": 100,
   "visibility": 10000,
-  "wind_speed": 10.26,
-  "wind_gust": 11.32,
-  "wind_deg": 264,
+  "wind_speed": 10.51,
+  "wind_gust": 11.13,
+  "wind_deg": 250,
   "wind_dir": "W",
-  "rain_1h": 0.42,
-  "description": "Leichter Regen",
+  "rain_1h": 2.3,
+  "description": "Mäßiger Regen",
   "icon": "10d",
-  "last_updated": "2026-07-06T09:11:46.429500+00:00"
+  "last_updated": "2026-07-06T10:11:23.848048+00:00"
 }
