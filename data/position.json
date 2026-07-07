@@ -6,10 +6,10 @@
   "speed": 0.0,
   "course": 0.0,
   "status": "Stationär",
-  "departure_port": "SASSNITZ",
-  "atd": "06.07.2026, 06:28",
-  "destination_port": "TALLINN OL...",
-  "eta": "13.07.2026, 11:00",
-  "route_progress": 36.7,
-  "last_updated": "2026-07-07T08:26:56.257487+00:00"
+  "departure_port": "N/A",
+  "atd": "N/A",
+  "destination_port": "N/A",
+  "eta": "N/A",
+  "route_progress": 0.0,
+  "last_updated": "2026-07-07T09:27:15.015471+00:00"
 }
