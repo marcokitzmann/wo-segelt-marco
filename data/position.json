@@ -3,13 +3,13 @@
   "mmsi": "211215170",
   "latitude": 56.25,
   "longitude": 17.07,
-  "speed": 7.5,
-  "course": 7.0,
+  "speed": 7.0,
+  "course": 4.0,
   "status": "In Fahrt",
   "departure_port": "SASSNITZ",
   "atd": "06.07.2026, 06:28",
   "destination_port": "TALLINN OL...",
   "eta": "13.07.2026, 11:00",
   "route_progress": 17.1,
-  "last_updated": "2026-07-07T12:28:25.345384+00:00"
+  "last_updated": "2026-07-07T13:28:33.824499+00:00"
 }
