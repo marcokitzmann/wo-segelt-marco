@@ -3,13 +3,13 @@
   "mmsi": "211215170",
   "latitude": 56.25,
   "longitude": 17.07,
-  "speed": 6.0,
-  "course": 9.0,
+  "speed": 5.8,
+  "course": 21.0,
   "status": "In Fahrt",
   "departure_port": "SASSNITZ [DE]",
   "atd": "06.07.2026, 06:28",
-  "destination_port": "TALLINN OLD CITY [EE]",
+  "destination_port": "GOTEBORG [SE]",
   "eta": "13.07.2026, 11:00",
-  "route_progress": 17.1,
-  "last_updated": "2026-07-07T16:25:58.548817+00:00"
+  "route_progress": 31.6,
+  "last_updated": "2026-07-07T17:26:17.434157+00:00"
 }
