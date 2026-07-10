@@ -2,16 +2,16 @@
   "lat": 56.25,
   "lon": 17.07,
   "timezone": "Etc/GMT-1",
-  "temp": 16.4,
-  "feels_like": 16.26,
-  "clouds": 81,
+  "temp": 16.45,
+  "feels_like": 16.32,
+  "clouds": 84,
   "visibility": 10000,
-  "wind_speed": 7.46,
-  "wind_gust": 9.41,
-  "wind_deg": 12,
+  "wind_speed": 7.16,
+  "wind_gust": 9.01,
+  "wind_deg": 17,
   "wind_dir": "N",
   "rain_1h": null,
   "description": "Überwiegend bewölkt",
   "icon": "04d",
-  "last_updated": "2026-07-10T10:30:16.996943+00:00"
+  "last_updated": "2026-07-10T11:30:21.852167+00:00"
 }
