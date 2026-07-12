@@ -3,13 +3,13 @@
   "mmsi": "211215170",
   "latitude": 59.55,
   "longitude": 24.57,
-  "speed": 5.6,
-  "course": 35.0,
-  "status": "In Fahrt",
-  "departure_port": "SASSNITZ",
+  "speed": 0.0,
+  "course": 0.0,
+  "status": "Stationär",
+  "departure_port": "N/A",
   "atd": "06.07.2026, 06:28",
-  "destination_port": "GOTEBORG",
+  "destination_port": "N/A",
   "eta": "08.07.2026, 10:00",
-  "route_progress": 31.6,
-  "last_updated": "2026-07-12T20:10:03.572571+00:00"
+  "route_progress": 0.0,
+  "last_updated": "2026-07-12T21:25:32.804906+00:00"
 }
