@@ -6,10 +6,10 @@
   "speed": 0.0,
   "course": 0.0,
   "status": "Stationär",
-  "departure_port": "N/A",
-  "atd": "N/A",
-  "destination_port": "N/A",
-  "eta": "N/A",
-  "route_progress": 0.0,
-  "last_updated": "2026-07-13T10:32:49.609239+00:00"
+  "departure_port": "SASSNITZ",
+  "atd": "06.07.2026, 06:28",
+  "destination_port": "GOTEBORG",
+  "eta": "08.07.2026, 10:00",
+  "route_progress": 31.6,
+  "last_updated": "2026-07-13T11:29:47.410927+00:00"
 }
