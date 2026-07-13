@@ -2,16 +2,16 @@
   "lat": 59.55,
   "lon": 24.57,
   "timezone": "Europe/Tallinn",
-  "temp": 17.48,
-  "feels_like": 17.56,
-  "clouds": 84,
+  "temp": 17.9,
+  "feels_like": 17.99,
+  "clouds": 72,
   "visibility": 10000,
-  "wind_speed": 7.16,
-  "wind_gust": 10.02,
-  "wind_deg": 3,
+  "wind_speed": 6.76,
+  "wind_gust": 8.72,
+  "wind_deg": 4,
   "wind_dir": "N",
   "rain_1h": null,
   "description": "Überwiegend bewölkt",
   "icon": "04d",
-  "last_updated": "2026-07-13T04:35:47.351341+00:00"
+  "last_updated": "2026-07-13T05:36:33.357587+00:00"
 }
