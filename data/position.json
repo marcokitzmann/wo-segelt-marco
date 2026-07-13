@@ -7,9 +7,9 @@
   "course": 0.0,
   "status": "Stationär",
   "departure_port": "N/A",
-  "atd": "13.07.2026, 10:04",
+  "atd": "N/A",
   "destination_port": "N/A",
-  "eta": "13.07.2026, 11:00",
+  "eta": "N/A",
   "route_progress": 0.0,
-  "last_updated": "2026-07-13T16:30:57.013871+00:00"
+  "last_updated": "2026-07-13T17:30:32.811754+00:00"
 }
