@@ -3,13 +3,13 @@
   "mmsi": "211215170",
   "latitude": 55.0,
   "longitude": 13.0,
-  "speed": 0.0,
-  "course": 1.0,
-  "status": "Stationär",
-  "departure_port": "N/A",
-  "atd": "N/A",
-  "destination_port": "N/A",
-  "eta": "N/A",
-  "route_progress": 0.0,
-  "last_updated": "2026-07-14T22:28:56.302826+00:00"
+  "speed": 6.3,
+  "course": 0.0,
+  "status": "In Fahrt",
+  "departure_port": "VISBY",
+  "atd": "10.07.2026, 17:44",
+  "destination_port": "TALLINN OL...",
+  "eta": "13.07.2026, 10:04",
+  "route_progress": 100.0,
+  "last_updated": "2026-07-14T23:30:19.511817+00:00"
 }
