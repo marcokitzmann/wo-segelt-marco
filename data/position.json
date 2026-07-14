@@ -1,15 +1,15 @@
 {
   "vessel": "Roald Amundsen",
   "mmsi": "211215170",
-  "latitude": 59.55,
-  "longitude": 24.57,
+  "latitude": 55.0,
+  "longitude": 13.0,
   "speed": 0.0,
   "course": 0.0,
   "status": "Stationär",
   "departure_port": "N/A",
-  "atd": "06.07.2026, 06:28",
+  "atd": "N/A",
   "destination_port": "N/A",
-  "eta": "08.07.2026, 10:00",
+  "eta": "N/A",
   "route_progress": 0.0,
-  "last_updated": "2026-07-14T18:28:18.102456+00:00"
+  "last_updated": "2026-07-14T19:10:03.626613+00:00"
 }
