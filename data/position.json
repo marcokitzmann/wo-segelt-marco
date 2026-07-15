@@ -6,10 +6,10 @@
   "speed": 6.3,
   "course": 0.0,
   "status": "In Fahrt",
-  "departure_port": "VISBY",
-  "atd": "2026-07-10 17:38 (LT)",
-  "destination_port": "HUNDIPEA",
+  "departure_port": "N/A",
+  "atd": "N/A",
+  "destination_port": "N/A",
   "eta": "N/A",
   "route_progress": 0.0,
-  "last_updated": "2026-07-15T12:27:22.553797+00:00"
+  "last_updated": "2026-07-15T13:27:24.194396+00:00"
 }
