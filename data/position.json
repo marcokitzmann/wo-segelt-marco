@@ -6,10 +6,10 @@
   "speed": 6.3,
   "course": 0.0,
   "status": "In Fahrt",
-  "departure_port": "N/A",
-  "atd": "N/A",
-  "destination_port": "N/A",
-  "eta": "N/A",
-  "route_progress": 0.0,
-  "last_updated": "2026-07-15T04:27:01.347828+00:00"
+  "departure_port": "VISBY",
+  "atd": "10.07.2026, 17:44",
+  "destination_port": "TALLINN OL...",
+  "eta": "13.07.2026, 10:04",
+  "route_progress": 100.0,
+  "last_updated": "2026-07-15T05:27:20.965396+00:00"
 }
