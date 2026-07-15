@@ -2,16 +2,16 @@
   "lat": 55,
   "lon": 13,
   "timezone": "Etc/GMT-1",
-  "temp": 19.99,
-  "feels_like": 20,
+  "temp": 19.12,
+  "feels_like": 19.05,
   "clouds": 0,
   "visibility": 10000,
-  "wind_speed": 2.9,
-  "wind_gust": 3.05,
-  "wind_deg": 42,
+  "wind_speed": 2.94,
+  "wind_gust": 2.95,
+  "wind_deg": 53,
   "wind_dir": "NO",
   "rain_1h": null,
   "description": "Klarer Himmel",
-  "icon": "01d",
-  "last_updated": "2026-07-15T19:26:31.510609+00:00"
+  "icon": "01n",
+  "last_updated": "2026-07-15T20:26:18.796899+00:00"
 }
