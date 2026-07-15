@@ -3,13 +3,13 @@
   "mmsi": "211215170",
   "latitude": 55.0,
   "longitude": 13.0,
-  "speed": 6.3,
+  "speed": 0.0,
   "course": 0.0,
   "status": "In Fahrt",
-  "departure_port": "VISBY",
-  "atd": "2026-07-10 17:38 (LT)",
-  "destination_port": "HUNDIPEA",
+  "departure_port": "N/A",
+  "atd": "N/A",
+  "destination_port": "N/A",
   "eta": "N/A",
   "route_progress": 0.0,
-  "last_updated": "2026-07-15T14:27:46.854987+00:00"
+  "last_updated": "2026-07-15T15:27:28.438213+00:00"
 }
