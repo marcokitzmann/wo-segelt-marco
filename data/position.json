@@ -3,13 +3,13 @@
   "mmsi": "211215170",
   "latitude": 55.0,
   "longitude": 13.0,
-  "speed": 4.9,
+  "speed": 4.6,
   "course": 0.0,
   "status": "In Fahrt",
   "departure_port": "HUNDIPEA",
   "atd": "2026-07-16 11:40 (LT)",
   "destination_port": "KLAIPEDA",
-  "eta": "2026-07-18 21:35 (LT)",
-  "route_progress": 4.4,
-  "last_updated": "2026-07-16T11:27:28.783840+00:00"
+  "eta": "2026-07-20 11:53 (LT)",
+  "route_progress": 5.7,
+  "last_updated": "2026-07-16T12:27:32.332057+00:00"
 }
