@@ -4,14 +4,14 @@
   "timezone": "Etc/GMT-1",
   "temp": 16.68,
   "feels_like": 16.47,
-  "clouds": 3,
+  "clouds": 5,
   "visibility": 10000,
-  "wind_speed": 4.01,
-  "wind_gust": 4.19,
-  "wind_deg": 89,
+  "wind_speed": 4.15,
+  "wind_gust": 4.4,
+  "wind_deg": 100,
   "wind_dir": "O",
   "rain_1h": null,
   "description": "Klarer Himmel",
-  "icon": "01n",
-  "last_updated": "2026-07-16T02:28:51.107204+00:00"
+  "icon": "01d",
+  "last_updated": "2026-07-16T03:28:44.388071+00:00"
 }
