@@ -7,9 +7,9 @@
   "course": 0.0,
   "status": "In Fahrt",
   "departure_port": "HUNDIPEA",
-  "atd": "2026-07-16 11:40 (LT)",
+  "atd": "2026-07-16 08:40 (UTC)",
   "destination_port": "KLAIPEDA",
   "eta": "N/A",
   "route_progress": 100.0,
-  "last_updated": "2026-07-21T04:26:29.489965+00:00"
+  "last_updated": "2026-07-21T05:27:02.855107+00:00"
 }
