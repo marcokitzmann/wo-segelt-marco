@@ -9,7 +9,7 @@
   "departure_port": "HUNDIPEA",
   "atd": "2026-07-16 11:40 (LT)",
   "destination_port": "KLAIPEDA",
-  "eta": "2026-07-24 10:14 (LT)",
-  "route_progress": 91.0,
-  "last_updated": "2026-07-24T07:26:51.533462+00:00"
+  "eta": "N/A",
+  "route_progress": 100.0,
+  "last_updated": "2026-07-24T08:27:00.141880+00:00"
 }
