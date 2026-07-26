@@ -7,9 +7,9 @@
   "course": 0.0,
   "status": "In Fahrt",
   "departure_port": "KLAIPEDA",
-  "atd": "2026-07-25 11:39 (LT)",
+  "atd": "25.07.2026, 10:45",
   "destination_port": "KLAIPEDA",
-  "eta": "N/A",
-  "route_progress": 0.0,
-  "last_updated": "2026-07-26T04:27:27.827387+00:00"
+  "eta": "25.07.2026, 12:39",
+  "route_progress": 100.0,
+  "last_updated": "2026-07-26T05:27:04.754439+00:00"
 }
