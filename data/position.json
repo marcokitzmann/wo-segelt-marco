@@ -3,13 +3,13 @@
   "mmsi": "211215170",
   "latitude": 55.0,
   "longitude": 13.0,
-  "speed": 4.7,
-  "course": 157.0,
-  "status": "In Fahrt",
+  "speed": 0.3,
+  "course": 191.0,
+  "status": "Langsame Fahrt",
   "departure_port": "KLAIPEDA",
   "atd": "25.07.2026, 10:45",
   "destination_port": "KLAIPEDA",
   "eta": "25.07.2026, 12:39",
   "route_progress": 100.0,
-  "last_updated": "2026-07-26T08:27:01.766300+00:00"
+  "last_updated": "2026-07-26T09:27:41.695761+00:00"
 }
