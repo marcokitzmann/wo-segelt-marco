@@ -4,12 +4,12 @@
   "latitude": 55.0,
   "longitude": 13.0,
   "speed": 4.7,
-  "course": 247.0,
+  "course": 246.0,
   "status": "In Fahrt",
   "departure_port": "KLAIPEDA",
   "atd": "25.07.2026, 10:45",
   "destination_port": "KLAIPEDA",
   "eta": "25.07.2026, 12:39",
   "route_progress": 100.0,
-  "last_updated": "2026-07-27T07:27:35.813425+00:00"
+  "last_updated": "2026-07-27T08:26:23.482803+00:00"
 }
