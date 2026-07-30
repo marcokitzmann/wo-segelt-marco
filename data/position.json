@@ -3,13 +3,13 @@
   "mmsi": "211215170",
   "latitude": 55.0,
   "longitude": 13.0,
-  "speed": 6.8,
-  "course": 200.4,
+  "speed": 5.0,
+  "course": 38.6,
   "status": "In Fahrt",
   "departure_port": "KLAIPEDA",
-  "atd": "2026-07-29 10:43 (LT)",
-  "destination_port": "N/A",
-  "eta": "N/A",
-  "route_progress": 100.0,
-  "last_updated": "2026-07-30T22:26:31.005256+00:00"
+  "atd": "25.07.2026, 12:39",
+  "destination_port": "ROSTOCK",
+  "eta": "05.08.2026, 14:00",
+  "route_progress": 0.0,
+  "last_updated": "2026-07-30T23:26:59.664907+00:00"
 }
