@@ -2,16 +2,16 @@
   "lat": 55,
   "lon": 13,
   "timezone": "Etc/GMT-1",
-  "temp": 16.81,
-  "feels_like": 16.77,
-  "clouds": 89,
+  "temp": 17.02,
+  "feels_like": 16.94,
+  "clouds": 100,
   "visibility": 10000,
-  "wind_speed": 6.05,
-  "wind_gust": 7.81,
-  "wind_deg": 304,
+  "wind_speed": 5.59,
+  "wind_gust": 7.32,
+  "wind_deg": 312,
   "wind_dir": "NW",
   "rain_1h": null,
   "description": "Bedeckt",
   "icon": "04d",
-  "last_updated": "2026-07-31T06:27:53.936687+00:00"
+  "last_updated": "2026-07-31T07:27:55.769238+00:00"
 }
