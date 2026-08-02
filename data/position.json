@@ -4,12 +4,12 @@
   "latitude": 55.0,
   "longitude": 13.0,
   "speed": 4.9,
-  "course": 247.0,
+  "course": 142.0,
   "status": "In Fahrt",
   "departure_port": "KLAIPEDA",
-  "atd": "N/A",
+  "atd": "29.07.2026, 09:50",
   "destination_port": "ROSTOCK",
-  "eta": "N/A",
-  "route_progress": 82.9,
-  "last_updated": "2026-08-02T20:26:41.181479+00:00"
+  "eta": "05.08.2026, 14:00",
+  "route_progress": 63.5,
+  "last_updated": "2026-08-02T21:27:04.806016+00:00"
 }
