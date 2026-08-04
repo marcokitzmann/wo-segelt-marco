@@ -7,9 +7,9 @@
   "course": 53.0,
   "status": "In Fahrt",
   "departure_port": "KLAIPEDA",
-  "atd": "N/A",
+  "atd": "29.07.2026, 09:50",
   "destination_port": "ROSTOCK",
-  "eta": "N/A",
-  "route_progress": 100.0,
-  "last_updated": "2026-08-04T22:27:00.406990+00:00"
+  "eta": "05.08.2026, 14:00",
+  "route_progress": 87.1,
+  "last_updated": "2026-08-04T23:26:55.151686+00:00"
 }
