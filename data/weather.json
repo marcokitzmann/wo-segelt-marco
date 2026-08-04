@@ -2,16 +2,16 @@
   "lat": 55,
   "lon": 13,
   "timezone": "Etc/GMT-1",
-  "temp": 19.78,
-  "feels_like": 20.06,
+  "temp": 19.48,
+  "feels_like": 19.78,
   "clouds": 100,
   "visibility": 10000,
-  "wind_speed": 6.18,
-  "wind_gust": 8.04,
-  "wind_deg": 114,
+  "wind_speed": 6.08,
+  "wind_gust": 8.15,
+  "wind_deg": 138,
   "wind_dir": "SO",
-  "rain_1h": 5.51,
+  "rain_1h": 8.18,
   "description": "Starker Regen",
   "icon": "10d",
-  "last_updated": "2026-08-04T09:26:56.565613+00:00"
+  "last_updated": "2026-08-04T10:26:56.114076+00:00"
 }
