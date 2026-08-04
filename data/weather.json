@@ -3,15 +3,15 @@
   "lon": 13,
   "timezone": "Etc/GMT-1",
   "temp": 19.48,
-  "feels_like": 19.78,
+  "feels_like": 19.86,
   "clouds": 100,
   "visibility": 10000,
-  "wind_speed": 6.08,
-  "wind_gust": 8.15,
-  "wind_deg": 138,
+  "wind_speed": 5.75,
+  "wind_gust": 7,
+  "wind_deg": 122,
   "wind_dir": "SO",
-  "rain_1h": 8.18,
-  "description": "Starker Regen",
+  "rain_1h": 0.11,
+  "description": "Leichter Regen",
   "icon": "10d",
-  "last_updated": "2026-08-04T10:26:56.114076+00:00"
+  "last_updated": "2026-08-04T11:27:36.505664+00:00"
 }
