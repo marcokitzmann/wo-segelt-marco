@@ -6,10 +6,10 @@
   "speed": 2.6,
   "course": 8.0,
   "status": "In Fahrt",
-  "departure_port": "DA NANG",
-  "atd": "N/A",
-  "destination_port": "N/A",
-  "eta": "N/A",
-  "route_progress": 0.0,
-  "last_updated": "2026-08-06T06:26:57.410149+00:00"
+  "departure_port": "KLAIPEDA",
+  "atd": "29.07.2026, 09:50",
+  "destination_port": "ROSTOCK",
+  "eta": "05.08.2026, 14:00",
+  "route_progress": 87.1,
+  "last_updated": "2026-08-06T07:27:09.427659+00:00"
 }
