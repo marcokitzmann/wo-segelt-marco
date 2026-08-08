@@ -6,10 +6,10 @@
   "speed": 0.0,
   "course": 314.0,
   "status": "Festgemacht / Stationär",
-  "departure_port": "ROSTOCK",
-  "atd": "07.08.2026, 17:22",
+  "departure_port": "KLAIPEDA",
+  "atd": "N/A",
   "destination_port": "ROSTOCK",
-  "eta": "07.08.2026, 19:31",
-  "route_progress": 100.0,
-  "last_updated": "2026-08-08T08:27:07.514227+00:00"
+  "eta": "N/A",
+  "route_progress": 0.0,
+  "last_updated": "2026-08-08T09:26:57.999261+00:00"
 }
