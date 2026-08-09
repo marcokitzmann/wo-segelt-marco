@@ -7,9 +7,9 @@
   "course": 314.0,
   "status": "Festgemacht / Stationär",
   "departure_port": "ROSTOCK",
-  "atd": "07.08.2026, 17:22",
+  "atd": "N/A",
   "destination_port": "ROSTOCK",
-  "eta": "07.08.2026, 19:31",
-  "route_progress": 100.0,
-  "last_updated": "2026-08-09T17:25:59.850831+00:00"
+  "eta": "N/A",
+  "route_progress": 0.0,
+  "last_updated": "2026-08-09T18:26:53.597740+00:00"
 }
