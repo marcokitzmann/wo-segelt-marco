@@ -7,9 +7,9 @@
   "course": 313.0,
   "status": "Festgemacht / Stationär",
   "departure_port": "ROSTOCK",
-  "atd": "09.08.2026, 12:40",
-  "destination_port": "MALMO",
-  "eta": "15.08.2026, 14:00",
+  "atd": "N/A",
+  "destination_port": "ROSTOCK",
+  "eta": "N/A",
   "route_progress": 0.0,
-  "last_updated": "2026-08-11T03:26:45.436085+00:00"
+  "last_updated": "2026-08-11T05:27:27.984678+00:00"
 }
