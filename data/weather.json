@@ -4,14 +4,14 @@
   "timezone": "Etc/GMT-1",
   "temp": 16.59,
   "feels_like": 16.24,
-  "clouds": 22,
+  "clouds": 82,
   "visibility": 10000,
-  "wind_speed": 3.66,
-  "wind_gust": 3.76,
-  "wind_deg": 218,
+  "wind_speed": 2.2,
+  "wind_gust": 2.17,
+  "wind_deg": 216,
   "wind_dir": "SW",
   "rain_1h": null,
-  "description": "Ein paar Wolken",
-  "icon": "02n",
-  "last_updated": "2026-08-12T18:52:14.136344+00:00"
+  "description": "Überwiegend bewölkt",
+  "icon": "04n",
+  "last_updated": "2026-08-12T19:27:04.821973+00:00"
 }
