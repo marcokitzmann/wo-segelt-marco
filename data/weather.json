@@ -2,16 +2,16 @@
   "lat": 55,
   "lon": 13,
   "timezone": "Etc/GMT-1",
-  "temp": 14.21,
-  "feels_like": 13.57,
-  "clouds": 11,
+  "temp": 13.82,
+  "feels_like": 13.14,
+  "clouds": 13,
   "visibility": 10000,
-  "wind_speed": 6.08,
-  "wind_gust": 6.01,
-  "wind_deg": 310,
+  "wind_speed": 5.43,
+  "wind_gust": 5.2,
+  "wind_deg": 314,
   "wind_dir": "NW",
   "rain_1h": null,
   "description": "Ein paar Wolken",
   "icon": "02n",
-  "last_updated": "2026-08-12T00:45:32.157205+00:00"
+  "last_updated": "2026-08-12T01:47:33.582563+00:00"
 }
