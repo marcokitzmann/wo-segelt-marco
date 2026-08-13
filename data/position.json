@@ -3,13 +3,13 @@
   "mmsi": "211215170",
   "latitude": 55.0,
   "longitude": 13.0,
-  "speed": 2.1,
-  "course": 37.0,
+  "speed": 3.5,
+  "course": 354.0,
   "status": "In Fahrt",
   "departure_port": "ROSTOCK",
-  "atd": "N/A",
+  "atd": "11.08.2026, 14:56",
   "destination_port": "MALMO",
-  "eta": "N/A",
-  "route_progress": 49.8,
-  "last_updated": "2026-08-12T19:26:26.770414+00:00"
+  "eta": "14.08.2026, 18:00",
+  "route_progress": 73.3,
+  "last_updated": "2026-08-13T11:27:53.916691+00:00"
 }
