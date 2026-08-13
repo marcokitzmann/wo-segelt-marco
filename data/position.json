@@ -7,9 +7,9 @@
   "course": 354.0,
   "status": "In Fahrt",
   "departure_port": "ROSTOCK",
-  "atd": "N/A",
+  "atd": "11.08.2026, 14:56",
   "destination_port": "MALMO",
-  "eta": "N/A",
-  "route_progress": 75.3,
-  "last_updated": "2026-08-13T14:26:52.484530+00:00"
+  "eta": "14.08.2026, 18:00",
+  "route_progress": 100.0,
+  "last_updated": "2026-08-13T15:28:04.370574+00:00"
 }
