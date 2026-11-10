@@ -1,20 +1,20 @@
 #!/usr/bin/env bash
-# Scraper + Git-Push fuer den Raspberry Pi
+# AIS-Abruf + Git-Push fuer den Raspberry Pi
 # Cronjob-Beispiel (jede Stunde, 10 min nach der vollen Stunde):
-#   10 * * * * /home/pi/wo-segelt-marco/scripts/run_and_push.sh >> /home/pi/logs/scraper.log 2>&1
+#   10 * * * * /home/kitzmann/MarcosSkripte/wo-segelt-marco/scripts/run_and_push.sh >> /home/kitzmann/scripts/logs/roald-tracker.log 2>&1
 
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-SCRIPT="$REPO_DIR/scripts/scrape.py"
+SCRIPT="$REPO_DIR/scripts/fetch_position.py"
 LOG_PREFIX="[$(date -u '+%Y-%m-%dT%H:%MZ')]"
 
-echo "$LOG_PREFIX === Scraper-Lauf gestartet ==="
+echo "$LOG_PREFIX === AIS-Lauf gestartet ==="
 
 # Remote-Stand holen und lokalen Branch synchronisieren.
 # Bei Rebase-Konflikten (z.B. nach manuellem Eingriff im Remote) wird der
 # lokale Branch hart auf den Remote-Stand zurueckgesetzt – die Daten werden
-# vom Scraper ohnehin neu generiert.
+# vom Skript ohnehin neu generiert.
 cd "$REPO_DIR"
 git fetch origin
 if ! git rebase origin/main; then
@@ -35,7 +35,7 @@ if [ -f "$REPO_DIR/.env" ]; then
     set +a
 fi
 
-# Scraper ausfuehren
+# Position per AIS abrufen
 python "$SCRIPT"
 
 # Daten committen und pushen
@@ -70,4 +70,4 @@ else
     echo "$LOG_PREFIX Daten gepusht."
 fi
 
-echo "$LOG_PREFIX === Scraper-Lauf beendet ==="
+echo "$LOG_PREFIX === AIS-Lauf beendet ==="

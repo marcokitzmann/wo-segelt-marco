@@ -76,14 +76,11 @@ function updateVoyageBar(pos) {
 
   let pct = null;
 
-  // Zeitbasierte Berechnung via ATD → ETA (zuverlässiger als gescrapte Werte)
+  // Zeitbasierte Berechnung via ATD → ETA
   const atd = parsePosDate(pos.atd);
   const eta = parsePosDate(pos.eta);
   if (atd && eta && eta > atd) {
     pct = Math.min(100, Math.max(0, (Date.now() - atd) / (eta - atd) * 100));
-  } else if (pos.route_progress != null) {
-    // Fallback: gescrapter Wert, falls Zeitdaten fehlen
-    pct = pos.route_progress;
   }
 
   if (pct == null) {

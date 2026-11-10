@@ -1,22 +1,21 @@
 name: Schiffsposition aktualisieren (manuell)
-# Automatisches Scraping laeuft als Cronjob auf dem Raspberry Pi.
+# Die regelmaessige Aktualisierung laeuft per Cronjob (scripts/run_and_push.sh).
 # Dieser Workflow kann manuell als Fallback ausgefuehrt werden.
+# Benoetigte Repository-Secrets: AISSTREAM_API_KEY, OPENWEATHER_API_KEY
 
 on:
   workflow_dispatch:
     inputs:
       debug:
-        description: 'Debug-Ausgabe aktivieren'
+        description: 'Alle empfangenen AIS-Meldungen ausgeben'
         type: boolean
         default: false
-  # schedule:
-  #   - cron: '35 * * * *'
 
 permissions:
   contents: write
 
 jobs:
-  scrape:
+  update:
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -34,14 +33,12 @@ jobs:
       - name: Abhängigkeiten installieren
         run: pip install -r requirements.txt
 
-      - name: Playwright-Browser installieren
-        run: python -m playwright install chromium --with-deps
-
-      - name: Schiffsposition und Wetter scrapen
+      - name: Position per AIS und Wetter abrufen
         env:
+          AISSTREAM_API_KEY: ${{ secrets.AISSTREAM_API_KEY }}
           OPENWEATHER_API_KEY: ${{ secrets.OPENWEATHER_API_KEY }}
-          SCRAPE_DEBUG: ${{ inputs.debug && '1' || '' }}
-        run: python scripts/scrape.py
+          AIS_DEBUG: ${{ inputs.debug && '1' || '' }}
+        run: python scripts/fetch_position.py
 
       - name: Daten committen und pushen
         run: |
