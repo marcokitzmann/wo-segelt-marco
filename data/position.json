@@ -8,7 +8,7 @@
   "status": null,
   "departure_port": null,
   "atd": null,
-  "destination_port": null,
-  "eta": null,
+  "destination_port": "ES VGO",
+  "eta": "06.11.2026, 15:00",
   "last_updated": "2026-07-12T19:17:21.151190+00:00"
 }
