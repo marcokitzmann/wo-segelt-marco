@@ -1,15 +1,14 @@
 {
   "vessel": "Roald Amundsen",
   "mmsi": "211215170",
-  "latitude": 55.0,
-  "longitude": 13.0,
-  "speed": 3.5,
-  "course": 354.0,
-  "status": "In Fahrt",
-  "departure_port": "ROSTOCK",
-  "atd": "N/A",
-  "destination_port": "MALMO",
-  "eta": "N/A",
-  "route_progress": 75.3,
-  "last_updated": "2026-08-13T18:26:09.294376+00:00"
+  "latitude": 59.55,
+  "longitude": 24.57,
+  "speed": 5.6,
+  "course": 327.0,
+  "status": null,
+  "departure_port": null,
+  "atd": null,
+  "destination_port": null,
+  "eta": null,
+  "last_updated": "2026-07-12T19:17:21.151190+00:00"
 }
