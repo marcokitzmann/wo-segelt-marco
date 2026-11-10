@@ -2,7 +2,8 @@
 """
 Ermittelt die Position der Roald Amundsen ueber den AIS-Datenstrom von
 aisstream.io (WebSocket) und schreibt data/position.json und data/history.json.
-Holt zusaetzlich Wetterdaten von OpenWeatherMap (data/weather.json).
+Holt zusaetzlich Wetterdaten von OpenWeatherMap (data/weather.json) und die
+neueste Tagesmeldung aus dem RSS-Feed von sailtraining.de (data/news.json).
 
 Umgebungsvariablen (oder .env):
   AISSTREAM_API_KEY    API-Key von https://aisstream.io (Pflicht)
@@ -12,11 +13,14 @@ Umgebungsvariablen (oder .env):
 """
 
 import asyncio
+import html
 import json
 import os
 import re
 import sys
+import xml.etree.ElementTree as ET
 from datetime import datetime, timezone
+from email.utils import parsedate_to_datetime
 from math import asin, cos, radians, sin, sqrt
 from pathlib import Path
 
@@ -35,6 +39,7 @@ from websockets.exceptions import WebSocketException
 VESSEL_NAME = "Roald Amundsen"
 MMSI = "211215170"
 AIS_URL = "wss://stream.aisstream.io/v0/stream"
+NEWS_FEED_URL = "https://www.sailtraining.de/category/tagesmeldungen-de/feed/"
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 MAX_HISTORY = 720                 # ~30 Tage bei stuendlichem Lauf
 LISTEN_SECONDS = int(os.getenv("AIS_LISTEN_SECONDS", "600"))
@@ -318,6 +323,41 @@ def fetch_weather(lat: float, lon: float) -> dict | None:
     }
 
 
+# ── Tagesmeldung (RSS) ────────────────────────────────────────────────────────
+
+def _html_to_text(raw: str | None) -> str:
+    text = re.sub(r"<br\s*/?>", " ", raw or "", flags=re.I)
+    text = re.sub(r"<[^>]+>", "", text)
+    return re.sub(r"\s+", " ", html.unescape(text)).strip()
+
+
+def fetch_news() -> dict | None:
+    """Neueste Tagesmeldung aus dem RSS-Feed von sailtraining.de."""
+    try:
+        resp = requests.get(NEWS_FEED_URL, timeout=20,
+                            headers={"User-Agent": "Mozilla/5.0 (wo-segelt-marco)"})
+        resp.raise_for_status()
+        item = ET.fromstring(resp.content).find("channel/item")
+    except Exception as exc:
+        print(f"Tagesmeldung konnte nicht geladen werden: {exc}", file=sys.stderr)
+        return None
+    if item is None or not (item.findtext("title") or "").strip():
+        print("Kein Eintrag im Tagesmeldungs-Feed.", file=sys.stderr)
+        return None
+
+    published = None
+    try:
+        published = parsedate_to_datetime(item.findtext("pubDate")).astimezone(timezone.utc).isoformat()
+    except Exception:
+        pass
+    return {
+        "title": item.findtext("title").strip(),
+        "link": (item.findtext("link") or item.findtext("guid") or NEWS_FEED_URL).strip(),
+        "excerpt": _html_to_text(item.findtext("description")),
+        "published": published,
+    }
+
+
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 def main() -> None:
@@ -325,15 +365,23 @@ def main() -> None:
     pos_file = DATA_DIR / "position.json"
     hist_file = DATA_DIR / "history.json"
 
+    # Tagesmeldung unabhaengig vom AIS-Abruf aktualisieren
+    news = fetch_news()
+    if news:
+        write_json(DATA_DIR / "news.json", news)
+        print(f"news.json geschrieben: {news['title']}")
+
     old = load_json(pos_file, {})
     history = load_json(hist_file, [])
     if not isinstance(history, list):
         history = []
 
+    ais_error = None
     try:
         position, static = asyncio.run(listen())
     except AisConnectionError as exc:
-        sys.exit(f"FEHLER: Keine Verbindung zu aisstream.io: {exc}")
+        ais_error = exc
+        position, static = None, None
 
     new = dict(old)
     new["vessel"] = VESSEL_NAME
@@ -358,7 +406,7 @@ def main() -> None:
             history = history[-MAX_HISTORY:]
             write_json(hist_file, history)
             print(f"History: {len(history)} Einträge.")
-    elif not position:
+    elif not position and not ais_error:
         print("Keine Positionsmeldung empfangen - Position bleibt unverändert.")
 
     if static and static.get("destination_port"):
@@ -383,6 +431,10 @@ def main() -> None:
             write_json(DATA_DIR / "weather.json", weather)
             print("weather.json geschrieben.")
 
+    if ais_error:
+        # Exit-Code 1, damit der Fehler im Log/Workflow sichtbar ist; die uebrigen
+        # Daten (Tagesmeldung, Wetter) sind trotzdem geschrieben.
+        sys.exit(f"FEHLER: Keine Verbindung zu aisstream.io: {ais_error}")
     print("Fertig.")
 
 

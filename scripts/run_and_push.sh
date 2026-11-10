@@ -35,12 +35,17 @@ if [ -f "$REPO_DIR/.env" ]; then
     set +a
 fi
 
-# Position per AIS abrufen
-python "$SCRIPT"
+# Position per AIS, Wetter und Tagesmeldung abrufen.
+# Auch bei Fehlern (z. B. aisstream nicht erreichbar) committen, was geschrieben
+# wurde; der Exit-Code wird am Ende weitergegeben.
+py_status=0
+python "$SCRIPT" || py_status=$?
 
 # Daten committen und pushen
 git add data/position.json data/history.json
-[ -f "$REPO_DIR/data/weather.json" ] && git add data/weather.json || true
+for f in weather.json news.json; do
+    [ -f "$REPO_DIR/data/$f" ] && git add "data/$f" || true
+done
 
 if git diff --staged --quiet; then
     echo "$LOG_PREFIX Keine Aenderungen – nichts zu committen."
@@ -70,4 +75,5 @@ else
     echo "$LOG_PREFIX Daten gepusht."
 fi
 
-echo "$LOG_PREFIX === AIS-Lauf beendet ==="
+echo "$LOG_PREFIX === AIS-Lauf beendet (Exit-Code Abruf: $py_status) ==="
+exit "$py_status"

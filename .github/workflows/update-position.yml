@@ -41,11 +41,14 @@ jobs:
         run: python scripts/fetch_position.py
 
       - name: Daten committen und pushen
+        if: ${{ !cancelled() }}
         run: |
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git config user.name  "github-actions[bot]"
           git add data/position.json data/history.json
-          [ -f data/weather.json ] && git add data/weather.json || true
+          for f in weather.json news.json; do
+            [ -f "data/$f" ] && git add "data/$f" || true
+          done
           if git diff --staged --quiet; then
             echo "Keine Änderungen – nichts zu committen."
           else

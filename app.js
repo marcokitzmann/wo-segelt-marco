@@ -325,39 +325,24 @@ function toggleSidebar() {
   document.getElementById('sidebar-overlay').classList.toggle('visible', open);
 }
 
-// ── Tagesmeldung RSS-Feed ────────────────────────────────────────────────────
+// ── Tagesmeldung (vom Abruf-Skript aus dem RSS-Feed nach data/news.json) ─────
 async function loadRssFeed() {
-  const FEED_URL = 'https://www.sailtraining.de/category/tagesmeldungen-de/feed/';
-
   try {
-    const box = document.getElementById('rss-box');
-    const res = await fetch(`https://corsproxy.io/?${encodeURIComponent(FEED_URL)}`);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const xml = await res.text();
+    const news = await getJSON('data/news.json');
+    if (!news?.title) throw new Error('Keine Tagesmeldung vorhanden');
 
-    const doc = new DOMParser().parseFromString(xml, 'text/xml');
-    const item = doc.querySelector('item');
-    if (!item) throw new Error('Kein RSS-Item gefunden');
-
-    const title = item.querySelector('title')?.textContent?.trim();
-    const link  = item.querySelector('link')?.textContent?.trim()
-               || item.querySelector('guid')?.textContent?.trim();
-    const desc  = item.querySelector('description')?.textContent || '';
-    const tmp   = document.createElement('div');
-    tmp.innerHTML = desc;
-    const text  = (tmp.textContent || tmp.innerText || '').trim();
-
-    if (!title) throw new Error('Kein Titel im Feed');
-
-    const href = link || FEED_URL;
+    // Nur http(s)-Links übernehmen
+    const href = /^https?:\/\//.test(news.link || '')
+      ? news.link
+      : 'https://www.sailtraining.de/category/tagesmeldungen-de/';
     const titleEl = document.getElementById('rss-title');
-    titleEl.textContent = title;
+    titleEl.textContent = news.title;
     titleEl.href = href;
     document.getElementById('rss-link').href = href;
-    set('rss-excerpt', text);
-    box.classList.remove('hidden');
+    set('rss-excerpt', news.excerpt);
+    document.getElementById('rss-box').classList.remove('hidden');
   } catch (err) {
-    console.warn('RSS-Feed konnte nicht geladen werden:', err);
+    console.warn('Tagesmeldung konnte nicht geladen werden:', err);
   }
 }
 
