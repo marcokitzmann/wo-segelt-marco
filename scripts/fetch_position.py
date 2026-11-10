@@ -223,6 +223,9 @@ async def listen() -> tuple[dict | None, dict | None]:
                         print("Subscription bestätigt.", flush=True)
                     elif mtype in ("PositionReport", "StandardClassBPositionReport"):
                         parsed = parse_position(msg)
+                        if not parsed:
+                            print(f"{mtype} verworfen (ungültige Daten): "
+                                  f"{json.dumps(msg, ensure_ascii=False)[:600]}", flush=True)
                         if parsed:
                             position = parsed
                             print(f"Position empfangen: {parsed}", flush=True)
