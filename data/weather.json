@@ -3,15 +3,15 @@
   "lon": -8.7255,
   "timezone": "Europe/Madrid",
   "temp": 18.51,
-  "feels_like": 18.58,
-  "clouds": 100,
-  "visibility": 100,
+  "feels_like": 18.64,
+  "clouds": 75,
+  "visibility": 4500,
   "wind_speed": 3.09,
   "wind_gust": null,
-  "wind_deg": 180,
+  "wind_deg": 160,
   "wind_dir": "S",
-  "rain_1h": 1.15,
-  "description": "Mäßiger Regen",
-  "icon": "10d",
-  "last_updated": "2026-11-11T10:18:05.666315+00:00"
+  "rain_1h": 2.73,
+  "description": "Nebel",
+  "icon": "50d",
+  "last_updated": "2026-11-11T11:58:02.141735+00:00"
 }
