@@ -2,16 +2,16 @@
   "lat": 42.2428,
   "lon": -8.7255,
   "timezone": "Europe/Madrid",
-  "temp": 16.84,
-  "feels_like": 16.85,
+  "temp": 16.28,
+  "feels_like": 16.31,
   "clouds": 75,
-  "visibility": 500,
-  "wind_speed": 2.06,
+  "visibility": 350,
+  "wind_speed": 1.03,
   "wind_gust": null,
-  "wind_deg": 210,
-  "wind_dir": "SW",
+  "wind_deg": 0,
+  "wind_dir": "N",
   "rain_1h": null,
   "description": "Nebel",
   "icon": "50n",
-  "last_updated": "2026-11-11T21:15:06.066846+00:00"
+  "last_updated": "2026-11-11T22:19:06.392196+00:00"
 }
