@@ -1,17 +1,17 @@
 {
   "lat": 42.2428,
-  "lon": -8.7255,
+  "lon": -8.7254,
   "timezone": "Europe/Madrid",
-  "temp": 16.64,
-  "feels_like": 16.37,
-  "clouds": 100,
+  "temp": 18.51,
+  "feels_like": 18.11,
+  "clouds": 75,
   "visibility": 10000,
-  "wind_speed": 3.09,
+  "wind_speed": 4.63,
   "wind_gust": null,
   "wind_deg": 180,
   "wind_dir": "S",
   "rain_1h": null,
-  "description": "Bedeckt",
-  "icon": "04d",
-  "last_updated": "2026-11-14T15:27:24.188398+00:00"
+  "description": "Leichtes Nieseln",
+  "icon": "09d",
+  "last_updated": "2026-11-14T16:15:23.078634+00:00"
 }
