@@ -5,13 +5,13 @@
   "temp": 14.64,
   "feels_like": 14.61,
   "clouds": 75,
-  "visibility": 8000,
-  "wind_speed": 5.66,
+  "visibility": 10000,
+  "wind_speed": 5.14,
   "wind_gust": null,
-  "wind_deg": 180,
+  "wind_deg": 190,
   "wind_dir": "S",
   "rain_1h": null,
   "description": "Überwiegend bewölkt",
   "icon": "04n",
-  "last_updated": "2026-11-15T01:42:24.729182+00:00"
+  "last_updated": "2026-11-15T02:28:27.007765+00:00"
 }
