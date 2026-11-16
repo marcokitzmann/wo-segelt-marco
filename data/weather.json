@@ -5,13 +5,13 @@
   "temp": 16.64,
   "feels_like": 16.81,
   "clouds": 100,
-  "visibility": 400,
-  "wind_speed": 3.6,
+  "visibility": 7000,
+  "wind_speed": 4.12,
   "wind_gust": null,
-  "wind_deg": 170,
+  "wind_deg": 200,
   "wind_dir": "S",
   "rain_1h": null,
-  "description": "Nebel",
-  "icon": "50n",
-  "last_updated": "2026-11-16T03:58:31.812816+00:00"
+  "description": "Bedeckt",
+  "icon": "04n",
+  "last_updated": "2026-11-16T04:30:30.621358+00:00"
 }
