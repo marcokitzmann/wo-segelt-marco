@@ -2,13 +2,13 @@
   "vessel": "Roald Amundsen",
   "mmsi": "211215170",
   "latitude": 42.24278,
-  "longitude": -8.72543,
-  "speed": 0.1,
-  "course": 313.3,
+  "longitude": -8.72544,
+  "speed": 0,
+  "course": 326,
   "status": "Festgemacht",
   "departure_port": null,
   "atd": null,
   "destination_port": "ES VGO",
   "eta": "06.11.2026, 15:00",
-  "last_updated": "2026-11-17T00:16:34+00:00"
+  "last_updated": "2026-11-17T01:31:33+00:00"
 }
