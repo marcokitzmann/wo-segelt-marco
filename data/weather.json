@@ -4,14 +4,14 @@
   "timezone": "Europe/Madrid",
   "temp": 18.51,
   "feels_like": 18.82,
-  "clouds": 100,
-  "visibility": 5000,
+  "clouds": 75,
+  "visibility": 10000,
   "wind_speed": 4.12,
   "wind_gust": null,
-  "wind_deg": 240,
+  "wind_deg": 230,
   "wind_dir": "SW",
   "rain_1h": null,
-  "description": "Trüb",
-  "icon": "50n",
-  "last_updated": "2026-11-17T03:18:37.461586+00:00"
+  "description": "Überwiegend bewölkt",
+  "icon": "04n",
+  "last_updated": "2026-11-17T04:18:39.293148+00:00"
 }
