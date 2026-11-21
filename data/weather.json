@@ -5,13 +5,13 @@
   "temp": 17.64,
   "feels_like": 17.91,
   "clouds": 100,
-  "visibility": 900,
-  "wind_speed": 2.06,
+  "visibility": 800,
+  "wind_speed": 1.54,
   "wind_gust": null,
-  "wind_deg": 160,
+  "wind_deg": 180,
   "wind_dir": "S",
-  "rain_1h": null,
-  "description": "Nebel",
-  "icon": "50d",
-  "last_updated": "2026-11-21T13:16:06.032356+00:00"
+  "rain_1h": 0.17,
+  "description": "Starker Regen",
+  "icon": "10d",
+  "last_updated": "2026-11-21T14:17:04.584958+00:00"
 }
