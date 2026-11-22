@@ -2,16 +2,16 @@
   "lat": 42.2428,
   "lon": -8.7255,
   "timezone": "Europe/Madrid",
-  "temp": 11.64,
-  "feels_like": 11.29,
+  "temp": 14.06,
+  "feels_like": 13.61,
   "clouds": 40,
   "visibility": 10000,
-  "wind_speed": 1.54,
+  "wind_speed": 2.06,
   "wind_gust": null,
   "wind_deg": 230,
   "wind_dir": "SW",
   "rain_1h": null,
   "description": "Mäßig bewölkt",
   "icon": "03n",
-  "last_updated": "2026-11-22T19:19:16.197727+00:00"
+  "last_updated": "2026-11-22T20:16:15.549371+00:00"
 }
