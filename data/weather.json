@@ -8,10 +8,10 @@
   "visibility": 10000,
   "wind_speed": 3.09,
   "wind_gust": null,
-  "wind_deg": 200,
+  "wind_deg": 180,
   "wind_dir": "S",
   "rain_1h": null,
   "description": "Ein paar Wolken",
   "icon": "02n",
-  "last_updated": "2026-11-23T23:56:17.463170+00:00"
+  "last_updated": "2026-11-24T00:16:32.412018+00:00"
 }
