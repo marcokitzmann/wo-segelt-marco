@@ -6,12 +6,12 @@
   "feels_like": 13.2,
   "clouds": 75,
   "visibility": 10000,
-  "wind_speed": 3.09,
+  "wind_speed": 4.12,
   "wind_gust": null,
   "wind_deg": 280,
   "wind_dir": "W",
   "rain_1h": null,
   "description": "Überwiegend bewölkt",
   "icon": "04d",
-  "last_updated": "2026-11-24T14:11:38.657419+00:00"
+  "last_updated": "2026-11-24T15:11:38.196862+00:00"
 }
