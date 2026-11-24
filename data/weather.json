@@ -3,15 +3,15 @@
   "lon": -8.7255,
   "timezone": "Europe/Madrid",
   "temp": 11.64,
-  "feels_like": 10.97,
+  "feels_like": 10.84,
   "clouds": 0,
   "visibility": 10000,
-  "wind_speed": 3.09,
+  "wind_speed": 4.12,
   "wind_gust": null,
-  "wind_deg": 230,
+  "wind_deg": 210,
   "wind_dir": "SW",
   "rain_1h": null,
   "description": "Klarer Himmel",
   "icon": "01n",
-  "last_updated": "2026-11-24T02:00:05.624641+00:00"
+  "last_updated": "2026-11-24T02:44:25.609231+00:00"
 }
