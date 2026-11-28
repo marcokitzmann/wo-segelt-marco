@@ -6,9 +6,9 @@
   "speed": 0.2,
   "course": 232.8,
   "status": "Vor Anker",
-  "departure_port": null,
-  "atd": null,
-  "destination_port": "ES VGO",
-  "eta": "06.11.2026, 15:00",
+  "departure_port": "ES VGO",
+  "atd": "28.11.2026, 04:00",
+  "destination_port": "PT LIS",
+  "eta": "07.12.2026, 14:00",
   "last_updated": "2026-11-27T18:15:56+00:00"
 }
