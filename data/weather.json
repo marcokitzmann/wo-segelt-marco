@@ -4,14 +4,14 @@
   "timezone": "Europe/Madrid",
   "temp": 15.64,
   "feels_like": 15.43,
-  "clouds": 98,
+  "clouds": 87,
   "visibility": 10000,
-  "wind_speed": 8.94,
-  "wind_gust": 11.96,
-  "wind_deg": 176,
+  "wind_speed": 8.8,
+  "wind_gust": 11.72,
+  "wind_deg": 173,
   "wind_dir": "S",
   "rain_1h": null,
   "description": "Bedeckt",
   "icon": "04n",
-  "last_updated": "2026-11-28T01:00:07.106317+00:00"
+  "last_updated": "2026-11-28T02:00:06.579183+00:00"
 }
