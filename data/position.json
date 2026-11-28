@@ -1,14 +1,14 @@
 {
   "vessel": "Roald Amundsen",
   "mmsi": "211215170",
-  "latitude": 42.21498,
-  "longitude": -8.88777,
-  "speed": 0.2,
-  "course": 265.2,
+  "latitude": 42.54394,
+  "longitude": -8.95966,
+  "speed": 0.1,
+  "course": 248.3,
   "status": "Vor Anker",
   "departure_port": "ES VGO",
   "atd": "28.11.2026, 04:00",
   "destination_port": "PT LIS",
   "eta": "07.12.2026, 14:00",
-  "last_updated": "2026-11-28T06:42:58+00:00"
+  "last_updated": "2026-11-28T16:17:35+00:00"
 }
